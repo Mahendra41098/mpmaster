@@ -1,0 +1,3064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Bill — Lingerie Store</title>
+<style>
+#app-loader{position:fixed;inset:0;background:#f8f0f4;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999}
+#app-loader h2{color:#72243E;font-size:18px;font-weight:600;margin-bottom:8px;font-family:sans-serif}
+#app-loader p{color:#aaa;font-size:13px;font-family:sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:#f8f0f4;color:#1a1a1a;min-height:100vh}
+.topbar{background:#72243E;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar h1{font-size:16px;font-weight:600}
+.topbar span{font-size:12px;opacity:0.7}
+.container{max-width:880px;margin:0 auto;padding:20px 16px}
+.tabs{display:flex;margin-bottom:20px;border:1px solid #e8d0da;border-radius:10px;overflow:hidden;width:fit-content;background:#fff}
+.tab{padding:8px 20px;font-size:13px;cursor:pointer;background:transparent;border:none;color:#888;white-space:nowrap;font-family:inherit}
+.tab.active{background:#FBEAF0;color:#72243E;font-weight:600}
+.card{background:#fff;border:1px solid #ecd6e0;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(114,36,62,0.05)}
+h3{font-size:15px;font-weight:600;margin-bottom:14px;color:#3a1020}
+.lbl{font-size:12px;color:#888;display:block;margin-bottom:4px;margin-top:10px;font-weight:500}
+input,select,textarea{width:100%;height:38px;padding:0 12px;border:1px solid #e0cdd5;border-radius:8px;background:#fff;color:#1a1a1a;font-size:13px;font-family:inherit;transition:border-color 0.15s}
+textarea{height:56px;padding:10px 12px;resize:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#D4537E;box-shadow:0 0 0 3px rgba(212,83,126,0.1)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.btn{height:38px;padding:0 16px;border:1px solid #e0cdd5;border-radius:8px;background:#fff;color:#1a1a1a;cursor:pointer;font-size:13px;white-space:nowrap;font-family:inherit;transition:all 0.15s}
+.btn:hover{background:#f5f5f5}
+.btn-pink{background:#FBEAF0;color:#72243E;border-color:#D4537E}
+.btn-pink:hover{background:#F4C0D1}
+.btn-green{background:#eafaf1;color:#1e8449;border-color:#a9dfbf}
+.btn-green:hover{background:#d5f5e3}
+.btn-wa{background:#25D366;color:#fff;border-color:#25D366;font-weight:600}
+.btn-wa:hover{background:#1ebe5d}
+.btn-xl{background:#217346;color:#fff;border-color:#217346;font-weight:600}
+.btn-xl:hover{background:#1a5c38}
+.btn-danger{color:#c0392b;border-color:#f5b7b1}
+.btn-danger:hover{background:#fdf2f2}
+.btn-sm{height:30px;padding:0 12px;font-size:12px}
+.inline-add{display:flex;gap:6px;margin-top:6px}
+.inline-add input{height:30px;font-size:12px;flex:1}
+.inline-add button{height:30px;padding:0 10px;font-size:12px;white-space:nowrap}
+.chip-group{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.toggle-chip{display:inline-flex;align-items:center;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid #e0cdd5;background:#fff;color:#555;user-select:none;transition:all 0.12s}
+.toggle-chip:hover{border-color:#D4537E;color:#72243E}
+.toggle-chip.on{background:#FBEAF0;color:#72243E;border-color:#D4537E;font-weight:600}
+.toggle-chip.all-btn{border-style:dashed;color:#999}
+.fast-box{background:#fdf5f8;border:1px dashed #e8c5d2;border-radius:10px;padding:16px;margin-bottom:14px}
+th{font-size:11px;font-weight:600;color:#888;padding:5px 8px 10px;border-bottom:1px solid #eee;text-align:left;white-space:nowrap;text-transform:uppercase;letter-spacing:0.4px}
+td{font-size:12px;padding:7px 8px;border-bottom:1px solid #f5edf0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.grp-header td{background:#fdf5f8;font-weight:600;font-size:12px;color:#993556;padding:5px 8px}
+.sku-tag{font-family:'Courier New',monospace;font-size:11px;background:#f5f5f5;padding:2px 7px;border-radius:4px;color:#555}
+.brand-tag{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;font-weight:600}
+.size-chip{background:#f0f0f0;padding:2px 9px;border-radius:12px;font-size:12px}
+.total-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.total-row.grand{font-size:16px;font-weight:700;border-top:2px solid #e8c5d2;padding-top:10px;margin-top:6px;color:#72243E}
+.alert{padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.alert.success{background:#eafaf1;color:#1e8449;border:1px solid #a9dfbf}
+.alert.danger{background:#fdf2f2;color:#c0392b;border:1px solid #f5b7b1}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{display:none}
+.hint{font-size:11px;color:#bbb;margin-top:3px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:12px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;margin:3px}
+.pill-x{cursor:pointer;opacity:0.5;font-size:14px}
+.pill-x:hover{opacity:1}
+.preview-count{font-size:12px;color:#aaa;margin-top:10px;text-align:center;min-height:18px}
+.export-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px}
+.wa-block{background:#f0faf4;border:1px solid #a9dfbf;border-radius:10px;padding:16px}
+.sett-block{margin-bottom:20px}
+.sett-block h4{font-size:13px;font-weight:600;margin-bottom:10px;color:#555}
+.hist-card{border:1px solid #ecd6e0;border-radius:10px;padding:14px 16px;margin-bottom:10px;background:#fff;transition:box-shadow 0.15s}
+.hist-card:hover{box-shadow:0 2px 8px rgba(114,36,62,0.1)}
+.hist-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.hist-card-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.hist-meta{font-size:12px;color:#aaa;margin-top:4px}
+.hist-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.hist-chip{font-size:11px;padding:2px 8px;border-radius:12px;background:#fdf5f8;color:#993556;border:1px solid #f0ccd8}
+.edit-field{border:1px dashed #D4537E!important;background:#fff9fb!important}
+.mx-th{background:#FBEAF0;color:#72243E;font-weight:600;font-size:12px;padding:6px 10px;border:1px solid #f0ccd8;text-align:center;white-space:nowrap}
+.mx-td{padding:4px;border:1px solid #f0e8ec;text-align:center}
+.mx-input{width:52px;height:32px;text-align:center;font-size:13px;font-weight:600;border:1px solid #e0cdd5;border-radius:6px;font-family:inherit}
+.mx-input:focus{outline:none;border-color:#D4537E;background:#fff9fb}
+.mx-row-label{font-size:12px;font-weight:600;color:#72243E;padding:4px 10px;background:#fdf5f8;border:1px solid #f0ccd8;white-space:nowrap}
+.bf-td{padding:3px 4px;border-bottom:1px solid #f5edf0;vertical-align:middle}
+.bf-input{width:100%;height:32px;padding:0 7px;border:1px solid #e8d0da;border-radius:6px;font-size:13px;font-family:inherit;background:#fff;color:#1a1a1a}
+.bf-input:focus{outline:none;border-color:#D4537E;background:#fff9fb}
+.bf-num{width:70px;text-align:right}
+.bf-amt{font-size:13px;font-weight:600;color:#72243E;text-align:right;padding:3px 8px;white-space:nowrap}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:200;overflow-y:auto;padding:2rem 1rem}
+.modal-box{background:#fff;border-radius:14px;max-width:720px;margin:0 auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:8px}
+.modal-body{padding:20px;max-height:72vh;overflow-y:auto;background:#fff}
+.print-bill{font-family:Arial,sans-serif;font-size:13px;color:#111}
+.print-bill h2{font-size:20px;font-weight:700;color:#72243E;margin-bottom:3px}
+.print-bill .sub{font-size:12px;color:#666;margin-bottom:14px}
+.pb-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:14px;margin-bottom:16px}
+.pb-grid p{font-size:12px;margin:2px 0;color:#444}
+.pb-grid strong{font-size:13px;color:#111;display:block;margin-bottom:4px}
+.pb-grid .section-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.print-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+.print-tbl th{background:#FBEAF0;color:#72243E;padding:7px 8px;text-align:left;font-weight:700;border-bottom:2px solid #D4537E;font-size:11px;text-transform:uppercase;letter-spacing:0.3px}
+.print-tbl td{padding:6px 8px;border-bottom:1px solid #f0e0e8}
+.print-tbl .grp{background:#f9f0f4;font-weight:700;color:#993556;font-size:11px;padding:4px 8px;text-transform:uppercase}
+.print-totals{margin-left:auto;width:280px;border-top:1px solid #eee;padding-top:10px}
+.pt-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.pt-grand{font-weight:700;font-size:16px;border-top:2px solid #D4537E;padding-top:8px;margin-top:6px;color:#72243E}
+.print-footer{text-align:center;font-size:11px;color:#aaa;margin-top:20px;border-top:1px solid #eee;padding-top:12px}
+@media(max-width:600px){.g2,.g3,.export-grid{grid-template-columns:1fr}.pb-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app-loader" style="position:fixed;inset:0;background:#f8f0f4;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999">
+  <div style="font-size:48px;margin-bottom:16px">👗</div>
+  <h2 style="color:#72243E;font-size:18px;font-weight:600;margin-bottom:8px;font-family:sans-serif">Loading Purchase Bill App...</h2>
+  <p style="color:#aaa;font-size:13px;font-family:sans-serif">Please wait a moment</p>
+</div>
+
+<div class="topbar">
+  <h1>Purchase Bill &#8212; Lingerie Store</h1>
+  <span id="topbar-date"></span>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('bill')">Purchase Bill</button>
+    <button class="tab" onclick="showTab('scanner')">📷 Scan Bill</button>
+    <button class="tab" onclick="showTab('history')">History <span id="hist-badge" style="background:#D4537E;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:4px;display:none"></span></button>
+    <button class="tab" onclick="showTab('settings')">Settings</button>
+  </div>
+
+  <div id="alertBox" class="alert"></div>
+
+  <!-- BILL TAB -->
+  <div id="tab-bill">
+
+    <div class="card">
+      <h3>Party Details</h3>
+      <div class="g3">
+        <div>
+          <span class="lbl">Party Name *</span>
+          <input id="p-name" placeholder="Supplier / Party name">
+        </div>
+        <div>
+          <span class="lbl">Party Code *</span>
+          <input id="p-code" placeholder="e.g. 25" maxlength="6" style="text-transform:uppercase;font-family:monospace;font-size:15px;font-weight:600;letter-spacing:2px">
+          <div style="font-size:11px;color:#bbb;margin-top:3px">2-6 chars · used in barcode prefix</div>
+        </div>
+        <div><span class="lbl">Mobile Number</span><input id="p-mobile" placeholder="+91 XXXXX XXXXX" maxlength="15"></div>
+      </div>
+      <div><span class="lbl">Address</span><textarea id="p-addr" placeholder="Full address of supplier"></textarea></div>
+      <div class="g3">
+        <div><span class="lbl">GST No.</span><input id="p-gst" placeholder="24AABCR1234A1Z5" style="text-transform:uppercase"></div>
+        <div><span class="lbl">Invoice No.</span><input id="inv-no" placeholder="PB-2026-001"></div>
+        <div><span class="lbl">Invoice Date</span><input type="date" id="inv-date"></div>
+      </div>
+      <div style="margin-top:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px">
+        <div style="font-size:12px;font-weight:600;color:#166534;margin-bottom:10px">Purchase Price Calculation <span style="font-weight:400;color:#888;font-size:11px">— set once, applies to all items in this bill</span></div>
+
+        <!-- Mode selector -->
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+          <button id="pp-mode-btn-direct" onclick="setPPMode('direct')" style="flex:1;min-width:120px;height:36px;border-radius:8px;border:2px solid #bbf7d0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:#166534">
+            ✅ Direct Rate<br><span style="font-weight:400;font-size:10px;color:#888">Price entered = purchase cost</span>
+          </button>
+          <button id="pp-mode-btn-gst" onclick="setPPMode('gst')" style="flex:1;min-width:120px;height:36px;border-radius:8px;border:2px solid #bbf7d0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:#166534">
+            ➕ Net + GST<br><span style="font-weight:400;font-size:10px;color:#888">e.g. Rs 100 + 5% = Rs 105</span>
+          </button>
+          <button id="pp-mode-btn-mrp" onclick="setPPMode('mrp')" style="flex:1;min-width:120px;height:36px;border-radius:8px;border:2px solid #bbf7d0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:#166534">
+            🏷️ MRP − Discount<br><span style="font-weight:400;font-size:10px;color:#888">e.g. MRP Rs 150 − 30% = Rs 105</span>
+          </button>
+        </div>
+
+        <!-- Direct: no extra fields -->
+        <div id="pp-panel-direct" style="display:none;font-size:13px;color:#166534;background:#fff;border-radius:7px;padding:8px 12px;border:1px solid #bbf7d0">
+          Price you enter = your purchase cost. Nothing added or subtracted.
+        </div>
+
+        <!-- GST panel -->
+        <div id="pp-panel-gst" style="display:none">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:13px;color:#555;font-weight:600">GST %</span>
+            <input type="number" id="bill-gst-pct" value="5" min="0" max="28" step="0.5" oninput="updatePPPreview()" style="width:64px;height:32px;padding:0 8px;border:1px solid #bbf7d0;border-radius:6px;font-size:15px;font-weight:700;text-align:center;color:#166534">
+            <div style="display:flex;gap:4px">
+              <button onclick="document.getElementById('bill-gst-pct').value=5;updatePPPreview()"  style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">5%</button>
+              <button onclick="document.getElementById('bill-gst-pct').value=12;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">12%</button>
+              <button onclick="document.getElementById('bill-gst-pct').value=18;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">18%</button>
+              <button onclick="document.getElementById('bill-gst-pct').value=28;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">28%</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MRP discount panel -->
+        <div id="pp-panel-mrp" style="display:none">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:13px;color:#555;font-weight:600">Discount on MRP</span>
+            <input type="number" id="bill-mrp-disc" value="30" min="0" max="99" step="0.5" oninput="updatePPPreview()" style="width:64px;height:32px;padding:0 8px;border:1px solid #bbf7d0;border-radius:6px;font-size:15px;font-weight:700;text-align:center;color:#166534">
+            <span style="font-size:13px;color:#555;font-weight:600">%</span>
+            <div style="display:flex;gap:4px">
+              <button onclick="document.getElementById('bill-mrp-disc').value=20;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">20%</button>
+              <button onclick="document.getElementById('bill-mrp-disc').value=25;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">25%</button>
+              <button onclick="document.getElementById('bill-mrp-disc').value=30;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">30%</button>
+              <button onclick="document.getElementById('bill-mrp-disc').value=35;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">35%</button>
+              <button onclick="document.getElementById('bill-mrp-disc').value=40;updatePPPreview()" style="height:28px;padding:0 10px;font-size:12px;border:1px solid #bbf7d0;border-radius:5px;background:#fff;cursor:pointer;font-weight:600">40%</button>
+            </div>
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:#888">In MRP mode — enter the MRP in the Purchase Price field. The app calculates your actual cost automatically.</div>
+        </div>
+
+        <!-- Live preview -->
+        <div id="pp-preview" style="margin-top:10px;font-size:13px;font-weight:600;color:#166534;background:#fff;border:1px solid #bbf7d0;border-radius:7px;padding:7px 12px"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <h3 style="margin:0">Quick Item Entry</h3>
+        <div style="display:flex;gap:6px;margin-left:auto">
+          <button id="mode-quick" class="btn btn-pink btn-sm" onclick="setEntryMode('quick')" style="font-size:11px">Chip</button>
+          <button id="mode-matrix" class="btn btn-sm" onclick="setEntryMode('matrix')" style="font-size:11px">Matrix</button>
+          <button id="mode-bill" class="btn btn-sm" onclick="setEntryMode('bill')" style="font-size:11px">Bill Format</button>
+        </div>
+      </div>
+      <div class="fast-box">
+        <div class="g3">
+          <div>
+            <span class="lbl">Brand Name</span>
+            <input id="ai-brand" list="brand-list" placeholder="Type or select brand" oninput="updateVariantPreview()">
+            <datalist id="brand-list"></datalist>
+            <div class="inline-add">
+              <input id="quick-brand" placeholder="New brand...">
+              <button class="btn btn-pink btn-sm" onclick="quickAdd('brand')">+ Save</button>
+            </div>
+          </div>
+          <div>
+            <span class="lbl">Article / Code *</span>
+            <input id="ai-article" placeholder="e.g. CB212" style="text-transform:uppercase">
+            <div class="hint">SKU = CODE-COLOR-SIZE</div>
+          </div>
+          <div>
+            <span class="lbl">Category</span>
+            <select id="ai-cat"><option value="">-- Select --</option></select>
+            <div class="inline-add">
+              <input id="quick-cat" placeholder="New category...">
+              <button class="btn btn-pink btn-sm" onclick="quickAdd('cat')">+ Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <div><span class="lbl">Purchase Price (Rs) *</span><input type="number" id="ai-pp" placeholder="0.00" oninput="updateVariantPreview()"></div>
+          <div><span class="lbl">MRP (Rs)</span><input type="number" id="ai-mrp" placeholder="0.00"></div>
+        </div>
+        <div id="variant-preview" style="display:none;margin-top:8px;background:#fff3e0;border:1px solid #ffcc80;border-radius:7px;padding:7px 12px;font-size:12px;color:#555">
+          Variant code: <span id="variant-preview-code" style="font-family:monospace;font-size:13px;font-weight:700;color:#e65100"></span>
+          <span style="color:#aaa;font-size:11px;margin-left:8px">( price ÷ <span id="variant-preview-div"></span> = <span id="variant-preview-result"></span> )</span>
+        </div>
+        <div style="margin-top:14px">
+          <span class="lbl" style="margin:0">Select Colours</span>
+          <div class="chip-group" id="color-chips"></div>
+          <div class="inline-add" style="margin-top:8px">
+            <input id="quick-color" placeholder="New colour...">
+            <button class="btn btn-pink btn-sm" onclick="quickAdd('color')">+ Save</button>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <span class="lbl">Select Sizes</span>
+          <div class="chip-group" id="size-chips"></div>
+          <div class="inline-add" style="margin-top:8px">
+            <input id="quick-size" placeholder="New size...">
+            <button class="btn btn-pink btn-sm" onclick="quickAdd('size')">+ Save</button>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;background:#fff;border:1px solid #e0cdd5;border-radius:8px;padding:8px 14px;font-size:13px;color:#555;flex-shrink:0">
+            <span style="position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0">
+              <input type="checkbox" id="bc-toggle" checked onchange="updateBcToggle()" style="opacity:0;width:0;height:0;position:absolute">
+              <span id="bc-track" style="position:absolute;inset:0;background:#D4537E;border-radius:20px;transition:background 0.2s"></span>
+              <span id="bc-thumb" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left 0.2s;left:18px"></span>
+            </span>
+            <span id="bc-toggle-label">Barcode: <strong style="color:#72243E">ON</strong></span>
+          </label>
+          <button class="btn btn-pink" onclick="generateRows()" style="flex:1;height:42px;font-size:14px;font-weight:600">Generate Items in Bill</button>
+          <button class="btn btn-sm" onclick="clearEntry()">Clear</button>
+        </div>
+        <div class="preview-count" id="preview-count"></div>
+      </div>
+
+      <!-- MATRIX ENTRY MODE -->
+      <div id="matrix-box" class="fast-box" style="display:none">
+        <div class="g3">
+          <div>
+            <span class="lbl">Brand Name</span>
+            <input id="mx-brand" list="brand-list" placeholder="Type or select brand">
+          </div>
+          <div>
+            <span class="lbl">Article / Code *</span>
+            <input id="mx-article" placeholder="e.g. CB212" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div>
+            <span class="lbl">Category</span>
+            <select id="mx-cat"><option value="">-- Select --</option></select>
+            <div class="inline-add">
+              <input id="mx-quick-cat" placeholder="New category...">
+              <button class="btn btn-pink btn-sm" onclick="quickAddCat('mx-cat','mx-quick-cat')">+ Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:10px">
+          <div><span class="lbl">Purchase Price (Rs) *</span><input type="number" id="mx-pp" placeholder="0.00"></div>
+          <div><span class="lbl">MRP (Rs)</span><input type="number" id="mx-mrp" placeholder="0.00"></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <span class="lbl" style="margin:0">Colours (comma separated)</span>
+            <input id="mx-colors" placeholder="e.g. Black, Red, Blue" style="margin-top:4px">
+          </div>
+          <div style="flex:1;min-width:180px">
+            <span class="lbl" style="margin:0">Sizes (comma separated)</span>
+            <input id="mx-sizes" placeholder="e.g. S, M, L, XL" style="margin-top:4px">
+          </div>
+          <button class="btn btn-pink btn-sm" onclick="buildMatrix()" style="white-space:nowrap;height:36px;margin-top:14px">Build Grid</button>
+        </div>
+        <div id="mx-grid-wrap" style="display:none;margin-top:14px">
+          <div style="font-size:12px;color:#888;margin-bottom:8px">Enter <strong>qty</strong> per cell — leave blank or 0 to skip that combination</div>
+          <div style="overflow-x:auto"><table id="mx-grid" style="border-collapse:collapse;font-size:13px"></table></div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;background:#fff;border:1px solid #e0cdd5;border-radius:8px;padding:8px 14px;font-size:13px;color:#555;flex-shrink:0">
+              <span style="position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0">
+                <input type="checkbox" id="bc-toggle-mx" checked onchange="updateBcToggleMx()" style="opacity:0;width:0;height:0;position:absolute">
+                <span id="bc-track-mx" style="position:absolute;inset:0;background:#D4537E;border-radius:20px;transition:background 0.2s"></span>
+                <span id="bc-thumb-mx" style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left 0.2s;left:18px"></span>
+              </span>
+              <span id="bc-toggle-label-mx">Barcode: <strong style="color:#72243E">ON</strong></span>
+            </label>
+            <button class="btn btn-pink" onclick="addMatrixToBill()" style="flex:1;height:42px;font-size:14px;font-weight:600">Add to Bill</button>
+            <button class="btn btn-sm" onclick="clearMatrix()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILL FORMAT MODE -->
+      <div id="bill-format-box" style="display:none">
+        <div style="background:#fdf5f8;border:1px dashed #e8c5d2;border-radius:10px;padding:14px;margin-bottom:12px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:120px">
+              <span class="lbl" style="margin:0">Brand (for all rows below)</span>
+              <input id="bf-brand" list="brand-list" placeholder="e.g. Krishna" style="margin-top:4px">
+            </div>
+            <div style="flex:1;min-width:100px">
+              <span class="lbl" style="margin:0">Category</span>
+              <select id="bf-cat" style="margin-top:4px"><option value="">-- Select --</option></select>
+              <div class="inline-add" style="margin-top:4px">
+                <input id="bf-quick-cat" placeholder="New category...">
+                <button class="btn btn-pink btn-sm" onclick="quickAddCat('bf-cat','bf-quick-cat')">+ Save</button>
+              </div>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <span class="lbl" style="margin:0">Default MRP (Rs)</span>
+              <input type="number" id="bf-mrp" placeholder="0.00" style="margin-top:4px">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:14px">
+              <label style="font-size:12px;color:#555;cursor:pointer">
+                <input type="checkbox" id="bf-bc" checked style="accent-color:#D4537E"> Barcode
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable bill rows table -->
+        <div style="overflow-x:auto;border:1px solid #ecd6e0;border-radius:10px">
+          <table style="width:100%;border-collapse:collapse;min-width:700px" id="bf-table">
+            <thead>
+              <tr style="background:#FBEAF0">
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left;white-space:nowrap;width:32px">#</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Article / Code</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Category</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Colour(s) — use , to separate</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Size(s) — use , to separate</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">Qty</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">Purchase Rs</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">MRP Rs</th>
+                <th style="padding:8px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">Amount</th>
+                <th style="padding:8px 4px;width:28px"></th>
+              </tr>
+            </thead>
+            <tbody id="bf-body"></tbody>
+            <tfoot>
+              <tr style="background:#fdf5f8">
+                <td colspan="5" style="padding:8px;font-size:12px;color:#aaa;font-style:italic">— totals —</td>
+                <td style="padding:8px;text-align:right;font-weight:700;color:#72243E" id="bf-total-qty">0</td>
+                <td></td><td></td>
+                <td style="padding:8px;text-align:right;font-weight:700;color:#72243E" id="bf-total-amt">Rs 0</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-pink" onclick="addBfRow()" style="font-weight:600">+ Add Row</button>
+          <button class="btn btn-pink" onclick="addBillFormatToBill()" style="flex:1;height:40px;font-size:14px;font-weight:600">Add All to Bill</button>
+          <button class="btn btn-sm" onclick="clearBillFormat()">Clear</button>
+        </div>
+        <div style="font-size:11px;color:#aaa;margin-top:6px">
+          Tip: Colour &amp; Size accept multiple values separated by <strong>,</strong> — e.g. <strong>Black, Red, Blue</strong> or <strong>S, M, L, XL</strong> — each combination becomes a separate SKU row. Enter key on last field adds a new row.
+        </div>
+      </div>
+
+      <div id="bill-wrap" style="display:none">
+        <div class="section-head" style="margin-bottom:10px">
+          <span style="font-size:13px;font-weight:600;color:#993556" id="bill-meta"></span>
+          <button class="btn btn-sm btn-danger" onclick="clearAllItems()">Clear All Items</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:640px">
+            <thead>
+              <tr>
+                <th>#</th><th>D.no</th><th>Photo</th><th>Variant Code</th><th>Barcode</th><th>Brand</th><th>SKU</th><th>Colour</th><th>Size</th><th>Cat</th>
+                <th style="text-align:right">Qty</th>
+                <th style="text-align:right">Purchase Rs</th>
+                <th style="text-align:right">MRP Rs</th>
+                <th style="text-align:right">Total Rs</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bill-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="summary-card" style="display:none">
+      <h3>Bill Summary</h3>
+      <div id="summary-content"></div>
+      <div style="margin-top:16px">
+        <div style="font-size:11px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Export &amp; Share</div>
+        <div class="export-grid" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <button class="btn btn-pink" style="height:44px;font-weight:600" onclick="downloadPDF()">&#128424; Print / PDF</button>
+          <button class="btn btn-xl" style="height:44px" onclick="downloadExcel()">&#128202; Excel (.xlsx)</button>
+          <button class="btn btn-wa" style="height:44px" onclick="sendWhatsApp()">&#128241; WhatsApp</button>
+          <button class="btn" id="sum-img-btn" style="height:44px;background:#8e44ad;color:#fff;border-color:#8e44ad;font-weight:600" onclick="downloadAllImages()">&#128444; Images ZIP</button>
+        </div>
+        <div id="wa-info" style="margin-top:10px;font-size:12px;color:#aaa"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-green btn-sm" onclick="saveBillToHistory()">Save to History</button>
+          <button class="btn btn-sm" onclick="clearBill()">New Bill</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCANNER TAB -->
+  <div id="tab-scanner" style="display:none">
+    <div class="card">
+      <div class="section-head">
+        <h3 style="margin:0">📷 AI Bill Scanner</h3>
+        <span style="font-size:12px;color:#aaa">Photo or paste text — AI reads any format</span>
+      </div>
+
+      <!-- Mode toggle -->
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button id="scan-mode-photo" onclick="setScanInputMode('photo')" class="btn btn-pink btn-sm" style="flex:1;height:38px;font-size:13px;font-weight:600">📷 Photo / Image</button>
+        <button id="scan-mode-text" onclick="setScanInputMode('text')" class="btn btn-sm" style="flex:1;height:38px;font-size:13px;font-weight:600">📋 Paste Text</button>
+      </div>
+
+      <!-- PHOTO MODE -->
+      <div id="scan-photo-section">
+        <!-- Upload area -->
+        <div id="scan-upload-area" style="border:2px dashed #D4537E;border-radius:14px;padding:28px;text-align:center;cursor:pointer;background:#fff9fb;margin-bottom:12px" onclick="document.getElementById('scan-file-input').click()">
+          <div style="font-size:36px;margin-bottom:8px">📄</div>
+          <div style="font-size:15px;font-weight:600;color:#72243E;margin-bottom:4px">Tap to upload supplier bill</div>
+          <div style="font-size:12px;color:#aaa">Photo (JPG/PNG) — any supplier format works</div>
+          <input type="file" id="scan-file-input" accept="image/*" style="display:none" onchange="handleScanFile(this)">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:42px;background:#FBEAF0;border:1px solid #ED93B1;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:#72243E">
+            📷 Take Photo
+            <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleScanFile(this)">
+          </label>
+          <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:42px;background:#fff;border:1px solid #e0cdd5;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:#555">
+            🖼️ From Gallery
+            <input type="file" accept="image/*" style="display:none" onchange="handleScanFile(this)">
+          </label>
+        </div>
+        <!-- Preview -->
+        <div id="scan-preview-wrap" style="display:none;margin-bottom:12px">
+          <img id="scan-preview-img" style="max-width:100%;max-height:280px;border-radius:10px;border:1px solid #ecd6e0;display:block;margin:0 auto">
+          <div style="text-align:center;margin-top:8px">
+            <button class="btn btn-pink" onclick="runAIScan('photo')" style="height:44px;font-size:14px;font-weight:700;padding:0 32px">🤖 Read Bill with AI</button>
+            <button class="btn btn-sm" onclick="clearScan()" style="margin-left:8px">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEXT MODE -->
+      <div id="scan-text-section" style="display:none">
+        <div style="font-size:12px;color:#888;margin-bottom:6px">Paste your bill text below — copied from WhatsApp, email, or typed manually:</div>
+        <textarea id="scan-text-input" placeholder="Paste bill text here...&#10;&#10;Example:&#10;1. NIGHTY-ALPINE XL  Qty:5  Rate:630  MRP:1010&#10;2. CAFTAAN-RAYON  L  Qty:3  Rate:745  MRP:1190&#10;&#10;Any format works — AI will read it." style="width:100%;height:180px;padding:10px;border:1px solid #e0cdd5;border-radius:10px;font-size:13px;font-family:monospace;resize:vertical;box-sizing:border-box"></textarea>
+        <div style="margin-top:8px;text-align:right">
+          <button class="btn btn-pink" onclick="runAIScan('text')" style="height:42px;font-size:14px;font-weight:700;padding:0 28px">🤖 Read with AI</button>
+          <button class="btn btn-sm" onclick="document.getElementById('scan-text-input').value=''" style="margin-left:8px">Clear</button>
+        </div>
+      </div>
+
+      <!-- Scanning status -->
+      <div id="scan-status" style="display:none;text-align:center;padding:24px">
+        <div style="font-size:28px;margin-bottom:8px">🤖</div>
+        <div style="font-size:14px;font-weight:600;color:#72243E" id="scan-status-text">Reading bill with AI...</div>
+        <div style="font-size:12px;color:#aaa;margin-top:4px">This takes about 10-15 seconds</div>
+        <div style="width:60%;margin:16px auto;height:4px;background:#f0e0e8;border-radius:4px;overflow:hidden">
+          <div id="scan-progress-bar" style="height:100%;background:#D4537E;border-radius:4px;width:0%;transition:width 0.5s"></div>
+        </div>
+      </div>
+
+      <!-- Scanned results table -->
+      <div id="scan-results" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <div>
+            <span style="font-size:14px;font-weight:700;color:#166534">✅ AI Scan Complete</span>
+            <span id="scan-count" style="font-size:12px;color:#888;margin-left:8px"></span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-pink" onclick="addScanRowBlank()">+ Add Row</button>
+            <button class="btn btn-sm" onclick="clearScan()">Clear</button>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#aaa;margin-bottom:8px">Review and edit below — then click Add to Bill Format</div>
+        <div style="overflow-x:auto;border:1px solid #ecd6e0;border-radius:10px">
+          <table style="width:100%;border-collapse:collapse;min-width:640px">
+            <thead>
+              <tr style="background:#FBEAF0">
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Description / Article</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Size</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Colour</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">Qty</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">Rate (Rs)</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:right">MRP (Rs)</th>
+                <th style="padding:7px 8px;font-size:11px;color:#72243E;font-weight:700;text-align:left">Design No</th>
+                <th style="padding:7px 4px;width:28px"></th>
+              </tr>
+            </thead>
+            <tbody id="scan-table-body"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px">
+          <div style="font-size:13px;font-weight:700;color:#166534;margin-bottom:10px">⚙️ Map Columns — tell the app what each field means</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <span style="font-size:11px;color:#555;font-weight:600">Article Code comes from</span>
+              <select id="map-article" style="width:100%;height:32px;margin-top:3px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px">
+                <option value="article">Article / Code field</option>
+                <option value="design_no">Design No field</option>
+                <option value="description">Description field</option>
+              </select>
+            </div>
+            <div>
+              <span style="font-size:11px;color:#555;font-weight:600">Category comes from</span>
+              <select id="map-cat" style="width:100%;height:32px;margin-top:3px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px">
+                <option value="none">— Fixed category below —</option>
+                <option value="description">Description field</option>
+                <option value="article">Article field</option>
+              </select>
+            </div>
+            <div>
+              <span style="font-size:11px;color:#555;font-weight:600">Purchase Rate comes from</span>
+              <select id="map-rate" style="width:100%;height:32px;margin-top:3px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px">
+                <option value="rate">Rate field</option>
+                <option value="mrp">MRP field</option>
+              </select>
+            </div>
+            <div>
+              <span style="font-size:11px;color:#555;font-weight:600">MRP comes from</span>
+              <select id="map-mrp" style="width:100%;height:32px;margin-top:3px;border:1px solid #bbf7d0;border-radius:6px;font-size:12px">
+                <option value="mrp">MRP field</option>
+                <option value="rate">Rate field</option>
+                <option value="none">— Leave blank —</option>
+              </select>
+            </div>
+          </div>
+          <!-- Colour handling -->
+          <div style="background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:10px;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:600;color:#166534;margin-bottom:6px">🎨 Colour handling</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="scan-color-mode" value="from_data" checked onchange="updateColorMode()" style="accent-color:#166534"> Use colour from scanned data (if present)
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="scan-color-mode" value="manual" onchange="updateColorMode()" style="accent-color:#166534"> Add colours manually per item
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer">
+                <input type="radio" name="scan-color-mode" value="fixed" onchange="updateColorMode()" style="accent-color:#166534"> Fixed colour for all items
+              </label>
+            </div>
+            <div id="fixed-color-wrap" style="display:none;margin-top:6px">
+              <input id="scan-fixed-color" placeholder="e.g. Assorted" style="height:30px;width:160px;font-size:12px;padding:0 8px;border:1px solid #bbf7d0;border-radius:6px">
+            </div>
+          </div>
+          <!-- Brand + fixed category -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:130px">
+              <span style="font-size:11px;color:#555;font-weight:600">Brand</span>
+              <input id="scan-brand" list="brand-list" placeholder="e.g. Natural" style="width:100%;height:34px;margin-top:3px">
+            </div>
+            <div style="flex:1;min-width:130px" id="fixed-cat-wrap">
+              <span style="font-size:11px;color:#555;font-weight:600">Fixed Category (if not from data)</span>
+              <select id="scan-cat" style="width:100%;height:34px;margin-top:3px"><option value="">-- Select --</option></select>
+            </div>
+            <button class="btn btn-pink" onclick="sendScanToBillFormat()" style="height:40px;font-size:14px;font-weight:700;padding:0 20px;white-space:nowrap">➕ Add to Bill Format</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="scan-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:14px;color:#dc2626;font-size:13px"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" style="display:none">
+    <div class="card">
+      <div class="section-head">
+        <h3 style="margin:0">Bill History</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="hist-search" placeholder="Search party, invoice..." style="height:32px;width:200px;font-size:12px" oninput="renderHistory()">
+          <button class="btn btn-sm btn-danger" onclick="clearAllHistory()">Clear All</button>
+        </div>
+      </div>
+      <div id="hist-empty" style="text-align:center;padding:2rem;color:#bbb;font-size:13px">No bills saved yet. Click "Save to History" after creating a bill.</div>
+      <div id="hist-list"></div>
+    </div>
+  </div>
+
+  <!-- VIEW/EDIT BILL MODAL -->
+  <div class="modal-bg" id="histModal">
+    <div class="modal-box" style="max-width:820px">
+      <div class="modal-header">
+        <span style="font-weight:600;font-size:15px" id="hist-modal-title">Bill Detail</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-pink btn-sm" id="hist-save-btn" onclick="saveHistEdit()" style="display:none">Save Changes</button>
+          <button class="btn btn-sm" id="hist-edit-btn" onclick="toggleHistEdit()">Edit</button>
+          <button class="btn btn-xl btn-sm" onclick="histDownloadExcel()">Excel</button>
+          <button class="btn btn-wa btn-sm" onclick="histSendWhatsApp()">WhatsApp</button>
+          <button class="btn btn-pink btn-sm" onclick="histDownloadPDF()">Download PDF</button>
+          <button class="btn btn-sm" onclick="histPrint()">Print</button>
+          <button class="btn btn-sm btn-danger" onclick="closeHistModal()">Close</button>
+        </div>
+      </div>
+      <div class="modal-body" id="hist-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tab-settings" style="display:none">
+
+    <div class="card">
+      <h3>Barcode Registry</h3>
+      <div style="background:#f5f0ff;border:1px solid #c5b3f0;border-radius:10px;padding:16px">
+        <div style="font-weight:600;color:#4a2d8a;margin-bottom:6px;font-size:14px">Unique Barcode Counter</div>
+        <div style="font-size:13px;color:#555;margin-bottom:12px">Every item gets a unique barcode when bill is generated. Barcodes are NEVER reused — even if you delete a bill.</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+          <div style="background:#fff;border-radius:8px;padding:12px 20px;text-align:center;border:1px solid #e0d4f7">
+            <div style="font-size:28px;font-weight:700;color:#72243E" id="registry-count">0</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Total barcodes issued</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:12px 20px;text-align:center;border:1px solid #e0d4f7">
+            <div style="font-size:14px;font-weight:600;color:#4a2d8a" id="registry-next">------</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Next barcode preview</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #e0d4f7;padding-top:14px;margin-top:4px">
+          <div style="font-size:13px;font-weight:600;color:#4a2d8a;margin-bottom:10px">Reset / Set Sequence</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1;min-width:140px">
+              <span class="lbl" style="margin-top:0;color:#777">Start next sequence from</span>
+              <input type="number" id="seq-reset-val" placeholder="e.g. 1 or 500" min="1" style="font-family:monospace;font-size:14px;font-weight:600;letter-spacing:1px">
+            </div>
+            <button class="btn btn-sm" style="height:38px;border-color:#c5b3f0;color:#4a2d8a;background:#f5f0ff" onclick="resetSequence()">Set Sequence</button>
+            <button class="btn btn-sm btn-danger" onclick="resetSequenceTo1()">Reset to 001</button>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:#e67e22;background:#fff8f0;border:1px solid #f5cba7;border-radius:6px;padding:6px 10px">
+            Warning: Resetting sequence may cause duplicate barcodes if old labels are still in use. Only reset if you are sure.
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:#999;border-top:1px solid #e0d4f7;padding-top:10px">
+          Format: <strong>Party Code + YY + MM + DD + 3-digit sequence</strong><br>
+          Example: Party Code <strong>25</strong> → <strong>25</strong> 26 04 01 <strong>001</strong> &nbsp;=&nbsp; <strong>25260401001</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="wa-block">
+        <div style="font-weight:600;color:#1e8449;margin-bottom:6px;font-size:14px">Send Bills to WhatsApp</div>
+        <div style="font-size:12px;color:#555;margin-bottom:14px">Save your number once here. Every bill can then be sent directly to WhatsApp with one click.</div>
+        <div style="display:flex;gap:10px;align-items:flex-end">
+          <div style="flex:1">
+            <span class="lbl" style="margin-top:0;color:#1e8449">WhatsApp Number (with country code, no + or spaces)</span>
+            <input id="wa-num-input" type="tel" placeholder="e.g. 919876543210" style="border-color:#a9dfbf;font-size:14px;font-weight:500;letter-spacing:1px">
+          </div>
+          <button class="btn btn-green" style="height:38px;white-space:nowrap;font-weight:600" onclick="saveWaNum()">Save Number</button>
+        </div>
+        <div id="wa-saved-row" style="display:none;margin-top:12px;display:none;align-items:center;gap:12px">
+          <span style="font-size:13px;color:#1e8449;font-weight:600" id="wa-saved-label"></span>
+          <button class="btn btn-sm btn-danger" onclick="clearWaNum()">Remove</button>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:#999;line-height:1.6">
+          India example: <strong>919876543210</strong> (91 = country code, then 10-digit number)<br>
+          The bill text will open in WhatsApp Web / App for this number.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>D.no (Design Number) Settings</h3>
+      <div style="background:#eef4ff;border:1px solid #b3ccf5;border-radius:10px;padding:16px">
+        <div style="font-weight:600;color:#1a3a6e;margin-bottom:6px;font-size:14px">Unique Design Number per Item</div>
+        <div style="font-size:12px;color:#555;margin-bottom:14px">Every SKU gets an auto-incremented D.no when bill is generated. Used in the Tag Print sheet.</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+          <div style="background:#fff;border-radius:8px;padding:12px 20px;text-align:center;border:1px solid #b3ccf5">
+            <div style="font-size:26px;font-weight:700;color:#72243E" id="dno-current">1000</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Last D.no issued</div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:12px 20px;text-align:center;border:1px solid #b3ccf5">
+            <div style="font-size:18px;font-weight:700;color:#1a3a6e" id="dno-next">1001</div>
+            <div style="font-size:11px;color:#888;margin-top:2px">Next D.no</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #b3ccf5;padding-top:14px">
+          <div style="font-size:13px;font-weight:600;color:#1a3a6e;margin-bottom:10px">Reset / Set Counter</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1;min-width:140px">
+              <span class="lbl" style="margin-top:0;color:#555">Start next D.no from</span>
+              <input type="number" id="dno-reset-val" placeholder="e.g. 1000 or 5000" min="1" style="font-family:monospace;font-size:15px;font-weight:700;letter-spacing:1px">
+            </div>
+            <button class="btn" style="height:38px;background:#eef4ff;color:#1a3a6e;border-color:#b3ccf5;font-weight:600" onclick="setDnoCounter()">Set Counter</button>
+            <button class="btn btn-sm btn-danger" onclick="resetDnoTo1000()">Reset to 1000</button>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#888">D.no is unique per item across all bills — never reused once issued.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Variant Code Settings</h3>
+      <div style="background:#fff8f0;border:1px solid #ffcc80;border-radius:10px;padding:16px">
+        <div style="font-weight:600;color:#e65100;margin-bottom:6px;font-size:14px">Price Divisor for Variant Code</div>
+        <div style="font-size:12px;color:#666;margin-bottom:14px">
+          Variant code format: <span style="font-family:monospace;background:#fff3e0;color:#e65100;padding:1px 7px;border-radius:4px;font-weight:600">partycode - brand - price ÷ divisor</span><br>
+          Change the divisor for different product categories or price ranges.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px">
+            <span class="lbl" style="margin-top:0;color:#e65100">Current divisor</span>
+            <input type="number" id="div-input" min="1" placeholder="e.g. 25" style="border-color:#ffcc80;font-size:18px;font-weight:700;font-family:monospace;letter-spacing:2px;color:#e65100">
+          </div>
+          <button class="btn" style="height:38px;background:#fff3e0;color:#e65100;border-color:#ffcc80;font-weight:600" onclick="saveDivisor()">Save Divisor</button>
+        </div>
+        <div id="div-preview" style="margin-top:12px;font-size:13px;color:#555"></div>
+        <div style="margin-top:14px;border-top:1px solid #ffcc80;padding-top:12px">
+          <div style="font-size:12px;font-weight:600;color:#888;margin-bottom:8px">Quick presets</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="applyPreset(25)"  style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 25</button>
+            <button class="btn btn-sm" onclick="applyPreset(50)"  style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 50</button>
+            <button class="btn btn-sm" onclick="applyPreset(100)" style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 100</button>
+            <button class="btn btn-sm" onclick="applyPreset(10)"  style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 10</button>
+            <button class="btn btn-sm" onclick="applyPreset(75)"  style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 75</button>
+            <button class="btn btn-sm" onclick="applyPreset(150)" style="background:#fff3e0;color:#e65100;border-color:#ffcc80">÷ 150</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Master Lists</h3>
+      <div class="sett-block">
+        <h4>Brands</h4>
+        <div class="inline-add"><input id="new-brand" placeholder="Add brand name..."><button class="btn btn-pink btn-sm" onclick="addMaster('brand')">+ Add</button></div>
+        <div id="brand-pills" style="margin-top:8px"></div>
+      </div>
+      <div style="border-top:1px solid #f0e0e8;margin:16px 0"></div>
+      <div class="sett-block">
+        <h4>Categories</h4>
+        <div class="inline-add"><input id="new-cat" placeholder="Add category..."><button class="btn btn-pink btn-sm" onclick="addMaster('cat')">+ Add</button></div>
+        <div id="cat-pills" style="margin-top:8px"></div>
+      </div>
+      <div style="border-top:1px solid #f0e0e8;margin:16px 0"></div>
+      <div class="sett-block">
+        <h4>Colours</h4>
+        <div class="inline-add"><input id="new-color" placeholder="Add colour..."><button class="btn btn-pink btn-sm" onclick="addMaster('color')">+ Add</button></div>
+        <div id="color-pills" style="margin-top:8px"></div>
+      </div>
+      <div style="border-top:1px solid #f0e0e8;margin:16px 0"></div>
+      <div class="sett-block">
+        <h4>Sizes</h4>
+        <div class="inline-add"><input id="new-size" placeholder="Add size..."><button class="btn btn-pink btn-sm" onclick="addMaster('size')">+ Add</button></div>
+        <div id="size-pills" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFF-SCREEN PDF RENDER TARGET — always in DOM, never hidden by overflow -->
+<div id="pdf-render-target" style="position:absolute;left:-9999px;top:0;width:794px;background:#fff;padding:20px;font-family:Arial,sans-serif;font-size:13px;color:#111"></div>
+
+<!-- STICKY BOTTOM BAR — always visible when bill has items -->
+<div id="sticky-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#72243E;padding:10px 16px;z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.2)">
+  <div style="max-width:880px;margin:0 auto;display:flex;gap:8px;align-items:center">
+    <span id="sticky-count" style="color:rgba(255,255,255,0.8);font-size:12px;flex-shrink:0"></span>
+    <button onclick="downloadPDF()" style="flex:1;height:38px;background:#fff;color:#72243E;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#128424; PDF</button>
+    <button onclick="downloadExcel()" style="flex:1;height:38px;background:#217346;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#128202; Excel</button>
+    <button onclick="sendWhatsApp()" style="flex:1;height:38px;background:#25D366;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#128241; WA</button>
+    <button id="img-dl-btn" onclick="downloadAllImages()" style="flex:1;height:38px;background:#8e44ad;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">&#128444; Photos</button>
+    <button onclick="saveBillToHistory()" style="height:38px;padding:0 12px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:12px;cursor:pointer">Save</button>
+  </div>
+</div>
+
+<!-- PRINT MODAL -->
+<div class="modal-bg" id="printModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span style="font-weight:600;font-size:15px">Print Preview</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-pink btn-sm" onclick="downloadPDF()">Download PDF</button>
+        <button class="btn btn-xl btn-sm" onclick="downloadExcel()">Excel</button>
+        <button class="btn btn-wa btn-sm" onclick="sendWhatsApp()">WhatsApp</button>
+        <button class="btn btn-sm" onclick="printDirect()">Print</button>
+        <button class="btn btn-sm btn-danger" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+    <div class="modal-body"><div id="print-content" class="print-bill"></div></div>
+  </div>
+</div>
+
+<script>
+var S={
+  brand:['Zivame','Clovia','Jockey','Amante','Enamor','Triumph'],
+  cat:['Bra','Panty','Camisole','Nighty','Shapewear','Lingerie Set','Other'],
+  color:['Black','White','Red','Pink','Nude','Navy','Baby Pink','Maroon','Sky Blue','Blue'],
+  size:['XS','S','M','L','XL','XXL','30B','32B','34B','36B','38B','32C','34C','36C','38C']
+};
+var billItems=[];
+var selColors=new Set(), selSizes=new Set();
+var waNumber='';
+var variantDivisor=25;
+var dNoCounter=1000;      // D.no starts from 1000, increments per item
+// Registry of ALL barcodes ever issued — prevents any duplicate forever
+var barcodeRegistry={};
+
+try{
+  var d=localStorage.getItem('lingStore8');
+  if(d){var p=JSON.parse(d);S=p.S||S;waNumber=p.waNumber||'';barcodeRegistry=p.barcodeRegistry||{};variantDivisor=p.variantDivisor||25;dNoCounter=p.dNoCounter||1000;}
+}catch(e){}
+
+function persist(){
+  try{localStorage.setItem('lingStore8',JSON.stringify({S:S,waNumber:waNumber,barcodeRegistry:barcodeRegistry,variantDivisor:variantDivisor,dNoCounter:dNoCounter}));}catch(e){}
+}
+
+// ── UNIQUE BARCODE ENGINE ──
+// Format: PARTYCODE + YY + MM + DD + 3-digit sequence
+// e.g. party code "25" → 25 26 04 01 001
+// Counter is global, stored in registry, NEVER reused across any bill ever
+function getNextCounter(){
+  var keys=Object.keys(barcodeRegistry);
+  if(!keys.length) return 1;
+  var max=0;
+  keys.forEach(function(k){
+    var n=parseInt((barcodeRegistry[k].seq||'0'),10);
+    if(n>max) max=n;
+  });
+  return max+1;
+}
+
+function generateUniqueBarcode(sku, invNo, partyCode){
+  var code=(partyCode||'XX').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length<2) code=(code+'00').slice(0,2);
+  var today=new Date();
+  var yy=String(today.getFullYear()).slice(2);
+  var mm=String(today.getMonth()+1).padStart(2,'0');
+  var dd=String(today.getDate()).padStart(2,'0');
+  var seq=getNextCounter();
+  var seqStr=String(seq).padStart(3,'0');
+  var barcode=code+yy+mm+dd+seqStr;  // e.g. 25260401001
+  // Guarantee uniqueness — collision-proof even across date boundaries
+  while(barcodeRegistry[barcode]){
+    seq++;
+    seqStr=String(seq).padStart(3,'0');
+    barcode=code+yy+mm+dd+seqStr;
+  }
+  // Lock it in registry immediately so next item cannot get same number
+  barcodeRegistry[barcode]={sku:sku,invNo:invNo||'',partyCode:code,date:today.toISOString(),seq:seq};
+  return barcode;
+}
+
+function registryCount(){return Object.keys(barcodeRegistry).length;}
+
+document.getElementById('topbar-date').textContent=
+  new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+
+function showTab(t){
+  document.getElementById('tab-bill').style.display=t==='bill'?'':'none';
+  document.getElementById('tab-scanner').style.display=t==='scanner'?'':'none';
+  document.getElementById('tab-history').style.display=t==='history'?'':'none';
+  document.getElementById('tab-settings').style.display=t==='settings'?'':'none';
+  document.querySelectorAll('.tab').forEach(function(el,i){
+    el.classList.toggle('active',['bill','scanner','history','settings'][i]===t);
+  });
+  if(t==='settings'){renderAllPills();loadWaSettings();updateRegistryDisplay();loadDivisorSettings();updateDnoDisplay();}
+  if(t==='history'){renderHistory();}
+  if(t==='scanner'){
+    var sc=document.getElementById('scan-cat');
+    if(sc) sc.innerHTML='<option value="">-- Category --</option>'+S.cat.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+    setScanInputMode(scanInputMode||'photo');
+  }
+  refreshWaInfo();
+}
+
+function showAlert(msg,type){
+  if(!type)type='success';
+  var a=document.getElementById('alertBox');
+  a.textContent=msg;a.className='alert '+type;a.style.display='block';
+  setTimeout(function(){a.style.display='none';},3000);
+}
+
+// WhatsApp number management
+// ── VARIANT DIVISOR ──
+function saveDivisor(){
+  var v=parseInt(document.getElementById('div-input').value||'25',10);
+  if(isNaN(v)||v<1){showAlert('Enter a valid number (minimum 1)','danger');return;}
+  variantDivisor=v;
+  persist();
+  loadDivisorSettings();
+  showAlert('Divisor saved: ÷'+v+' — new variant codes will use this');
+}
+
+function applyPreset(val){
+  document.getElementById('div-input').value=val;
+  variantDivisor=val;
+  persist();
+  loadDivisorSettings();
+  showAlert('Divisor set to ÷'+val);
+}
+
+function loadDivisorSettings(){
+  var el=document.getElementById('div-input');
+  if(el) el.value=variantDivisor;
+  updateDivisorPreview();
+  updateVariantPreview();
+}
+
+function updateDivisorPreview(){
+  var el=document.getElementById('div-preview');
+  if(!el) return;
+  var eg=375;
+  var result=(eg/variantDivisor).toFixed(2);
+  el.innerHTML='Example: price <strong>Rs '+eg+'</strong> ÷ <strong>'+variantDivisor+'</strong> = <strong style="color:#e65100">'+result+'</strong> &nbsp;→ variant code: <span style="font-family:monospace;background:#fff3e0;color:#e65100;padding:1px 8px;border-radius:4px;font-weight:700">11-soie-'+result+'</span>';
+}
+
+function updateVariantPreview(){
+  var pcode=(document.getElementById('p-code')||{value:''}).value.trim().toLowerCase()||'??';
+  var article=(document.getElementById('ai-article')||{value:''}).value.trim().toLowerCase()||'??';
+  var brand=(document.getElementById('ai-brand')||{value:''}).value.trim().toLowerCase().replace(/\s+/g,'').slice(0,6)||'??';
+  var pp=parseFloat((document.getElementById('ai-pp')||{value:''}).value)||0;
+  var prev=document.getElementById('variant-preview');
+  if(!prev) return;
+  if(!pp){prev.style.display='none';return;}
+  var result=(pp/variantDivisor).toFixed(2);
+  var code=pcode+'-'+article+'-'+brand+'-'+result;
+  prev.style.display='';
+  document.getElementById('variant-preview-code').textContent=code;
+  document.getElementById('variant-preview-div').textContent=variantDivisor;
+  document.getElementById('variant-preview-result').textContent=result;
+}
+
+// ── D.NO COUNTER ──
+function updateDnoDisplay(){
+  var cur=document.getElementById('dno-current');
+  var nxt=document.getElementById('dno-next');
+  if(cur) cur.textContent=dNoCounter>1000?dNoCounter-1:dNoCounter;
+  if(nxt) nxt.textContent=dNoCounter;
+  var dv=document.getElementById('dno-reset-val');
+  if(dv&&!dv.value) dv.placeholder='Next will be: '+dNoCounter;
+}
+
+function setDnoCounter(){
+  var val=parseInt(document.getElementById('dno-reset-val').value||'',10);
+  if(isNaN(val)||val<1){showAlert('Enter a valid number','danger');return;}
+  if(!confirm('Set D.no counter to '+val+'? Next item will get D.no '+val)){return;}
+  dNoCounter=val;
+  persist();
+  updateDnoDisplay();
+  document.getElementById('dno-reset-val').value='';
+  showAlert('D.no counter set — next item will be '+val);
+}
+
+function resetDnoTo1000(){
+  if(!confirm('Reset D.no back to 1000?')) return;
+  dNoCounter=1000;
+  persist();
+  updateDnoDisplay();
+  showAlert('D.no reset to 1000');
+}
+
+function updateRegistryDisplay(){
+  var el=document.getElementById('registry-count');
+  var en=document.getElementById('registry-next');
+  if(!el) return;
+  var count=Object.keys(barcodeRegistry).length;
+  el.textContent=count;
+  var today=new Date();
+  var yy=String(today.getFullYear()).slice(2);
+  var mm=String(today.getMonth()+1).padStart(2,'0');
+  var dd=String(today.getDate()).padStart(2,'0');
+  var nextSeq=String(getNextCounter()).padStart(3,'0');
+  var pcode=document.getElementById('p-code')?document.getElementById('p-code').value.trim().toUpperCase()||'XX':'XX';
+  if(en) en.textContent=pcode+yy+mm+dd+nextSeq;
+}
+
+// ── BARCODE TOGGLE ──
+var barcodeRequired=true;
+
+function updateBcToggle(){
+  var chk=document.getElementById('bc-toggle');
+  var track=document.getElementById('bc-track');
+  var thumb=document.getElementById('bc-thumb');
+  var label=document.getElementById('bc-toggle-label');
+  if(!chk) return;
+  barcodeRequired=chk.checked;
+  if(barcodeRequired){
+    track.style.background='#D4537E';
+    thumb.style.left='18px';
+    label.innerHTML='Barcode: <strong style="color:#72243E">ON</strong>';
+  } else {
+    track.style.background='#ccc';
+    thumb.style.left='2px';
+    label.innerHTML='Barcode: <strong style="color:#888">OFF</strong>';
+  }
+}
+
+// ── SEQUENCE RESET ──
+function resetSequence(){
+  var val=parseInt(document.getElementById('seq-reset-val').value||'1',10);
+  if(isNaN(val)||val<1){showAlert('Enter a valid number (minimum 1)','danger');return;}
+  if(!confirm('Set next barcode sequence to '+String(val).padStart(3,'0')+'? Only do this if you are sure no old barcodes with this number exist.')){return;}
+  // Inject a fake entry at val-1 to make getNextCounter() return val
+  // We do this by setting a sentinel key
+  barcodeRegistry['__seq_override__']={sku:'',invNo:'',date:new Date().toISOString(),seq:val-1};
+  persist();
+  updateRegistryDisplay();
+  document.getElementById('seq-reset-val').value='';
+  showAlert('Sequence will start from '+String(val).padStart(3,'0')+' on next bill');
+}
+
+function resetSequenceTo1(){
+  if(!confirm('Reset barcode sequence back to 001? Warning: this may cause duplicates if old labels are still in use.')){return;}
+  // Clear the whole registry — fresh start
+  barcodeRegistry={};
+  persist();
+  updateRegistryDisplay();
+  showAlert('Barcode sequence reset to 001');
+}
+
+function saveWaNum(){
+  var raw=document.getElementById('wa-num-input').value.trim().replace(/[\s\+\-\(\)]/g,'');
+  if(!raw||raw.length<10){showAlert('Enter a valid number with country code (e.g. 919876543210)','danger');return;}
+  waNumber=raw;persist();loadWaSettings();refreshWaInfo();
+  showAlert('WhatsApp number saved: +'+waNumber);
+}
+
+function clearWaNum(){
+  waNumber='';persist();loadWaSettings();refreshWaInfo();
+  showAlert('WhatsApp number removed');
+}
+
+function loadWaSettings(){
+  document.getElementById('wa-num-input').value=waNumber||'';
+  var row=document.getElementById('wa-saved-row');
+  if(waNumber){
+    row.style.display='flex';
+    document.getElementById('wa-saved-label').textContent='Saved: +'+waNumber;
+  } else {
+    row.style.display='none';
+  }
+}
+
+function refreshWaInfo(){
+  var el=document.getElementById('wa-info');
+  if(!el)return;
+  if(waNumber){
+    el.innerHTML='WhatsApp will open for: <strong>+'+waNumber+'</strong> &nbsp;<a href="#" onclick="showTab(\'settings\');return false;" style="color:#D4537E;font-size:11px">Change</a>';
+  } else {
+    el.innerHTML='<span style="color:#e67e22">No WhatsApp number saved.</span> <a href="#" onclick="showTab(\'settings\');return false;" style="color:#D4537E">Set in Settings</a>';
+  }
+}
+
+// WhatsApp send
+function sendWhatsApp(){
+  if(!billItems.length){showAlert('No items in bill','danger');return;}
+  if(!waNumber){showAlert('Set WhatsApp number in Settings first','danger');setTimeout(function(){showTab('settings');},1000);return;}
+  var party=document.getElementById('p-name').value||'Party';
+  var invNo=document.getElementById('inv-no').value||'';
+  var invDate=document.getElementById('inv-date').value||'';
+  var gst=document.getElementById('p-gst').value||'';
+  var totalQty=billItems.reduce(function(s,it){return s+it.qty;},0);
+  var totalAmt=billItems.reduce(function(s,it){return s+it.total;},0);
+  var totalMrp=billItems.reduce(function(s,it){return s+(it.mrp*it.qty);},0);
+
+  var msg='*PURCHASE BILL*\n';
+  msg+='--------------------------------\n';
+  msg+='*Party:* '+party+'\n';
+  if(invNo) msg+='*Invoice:* '+invNo+'  |  *Date:* '+invDate+'\n';
+  if(gst) msg+='*GST:* '+gst+'\n';
+  msg+='--------------------------------\n*ITEMS*\n';
+
+  var groups={};
+  billItems.forEach(function(it){
+    var k=(it.brand||'')+'::'+it.article;
+    if(!groups[k])groups[k]=[];
+    groups[k].push(it);
+  });
+
+  Object.keys(groups).forEach(function(key){
+    var g=groups[key];
+    var s=g[0];
+    msg+='\n*'+(s.brand?s.brand+' ':'')+s.article+'*\n';
+    g.forEach(function(it,i){
+      msg+='  '+(i+1)+'. '+it.sku+' | '+it.color+' | '+it.size+' | Qty:'+it.qty+' | Rs'+fmt(it.pp)+(it.mrp?' | MRP:Rs'+fmt(it.mrp):'')+'\n';
+    });
+  });
+
+  msg+='--------------------------------\n';
+  msg+='*Total SKUs:* '+billItems.length+'\n';
+  msg+='*Total Qty:* '+totalQty+' pcs\n';
+  if(totalMrp) msg+='*Total MRP:* Rs'+fmt(totalMrp)+'\n';
+  msg+='*TOTAL PURCHASE: Rs'+fmt(totalAmt)+'*\n';
+  msg+='--------------------------------\n_Lingerie Store Purchase Bill_';
+
+  window.open('https://wa.me/'+waNumber+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+// Excel download
+function downloadExcel(){
+  if(!billItems.length){showAlert('No items in bill','danger');return;}
+  if(typeof XLSX==='undefined'){showAlert('Excel library loading, try again in a moment','danger');return;}
+
+  var party=document.getElementById('p-name').value||'';
+  var partyCode=document.getElementById('p-code').value||'';
+  var invNo=document.getElementById('inv-no').value||'';
+  var invDate=document.getElementById('inv-date').value||'';
+  var gst=document.getElementById('p-gst').value||'';
+  var addr=document.getElementById('p-addr').value||'';
+  var mobile=document.getElementById('p-mobile').value||'';
+
+  // Ask user if party details should be included
+  var inclParty=confirm('Include party details (name, GST, address) in Excel?\n\nOK = Yes, include\nCancel = No, item data only');
+
+  var wb=XLSX.utils.book_new();
+
+  // Sheet 1: Full Bill
+  var rows=[];
+  // Always show party name, bill no, date at top
+  rows.push(['PURCHASE BILL','','','','','','','','','','','','']);
+  rows.push(['Party:',party,'','','Invoice No:',invNo,'','','','','','','']);
+  rows.push(['Date:',invDate,'','','Party Code:',partyCode,'','','','','','','']);
+  if(inclParty){
+    rows.push(['GST No:',gst,'','','Mobile:',mobile,'','','','','','','']);
+    rows.push(['Address:',addr,'','','','','','','','','','','']);
+  }
+  rows.push(['','','','','','','','','','','','','']);
+  rows.push(['#','D.no','Variant Code','Barcode','SKU','Brand','Article','Colour','Size','Category','Qty','Purchase Price (Rs)','MRP (Rs)','Total (Rs)']);
+
+  billItems.forEach(function(it,i){
+    rows.push([
+      i+1,
+      it.dNo||'',
+      it.variantCode||'',
+      it.barcode||'',
+      it.sku,
+      it.brand||'',
+      it.article||'',
+      it.color||'',
+      it.size||'',
+      it.cat||'',
+      it.qty,
+      it.pp,
+      it.mrp||0,
+      it.total
+    ]);
+  });
+
+  var tQty=billItems.reduce(function(s,it){return s+it.qty;},0);
+  var tAmt=billItems.reduce(function(s,it){return s+it.total;},0);
+  var tMrp=billItems.reduce(function(s,it){return s+(it.mrp*it.qty);},0);
+
+  rows.push(['','','','','','','','','','','','']);
+  rows.push(['','','','','','','','','TOTAL QTY',tQty,'',tAmt]);
+  rows.push(['','','','','','','','','TOTAL MRP','','',tMrp]);
+  rows.push(['','','','','','','','','GRAND TOTAL','','',tAmt]);
+
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:4},{wch:8},{wch:20},{wch:18},{wch:24},{wch:14},{wch:10},{wch:12},{wch:8},{wch:14},{wch:6},{wch:18},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws,'Purchase Bill');
+
+  // Sheet 2: Summary
+  var sum=[['SUMMARY BY ARTICLE'],['Article','Brand','SKUs','Total Qty','Total Purchase (Rs)','Total MRP (Rs)']];
+  var ag={};
+  billItems.forEach(function(it){
+    var k=it.article||it.sku;
+    if(!ag[k])ag[k]={brand:it.brand||'',skus:0,qty:0,amt:0,mrp:0};
+    ag[k].skus++;ag[k].qty+=it.qty;ag[k].amt+=it.total;ag[k].mrp+=(it.mrp*it.qty);
+  });
+  Object.keys(ag).forEach(function(art){
+    var g=ag[art];
+    sum.push([art,g.brand,g.skus,g.qty,g.amt,g.mrp]);
+  });
+  var ws2=XLSX.utils.aoa_to_sheet(sum);
+  ws2['!cols']=[{wch:14},{wch:14},{wch:8},{wch:10},{wch:20},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Summary');
+
+  // Sheet 3: Tag Sheet — SKU | Code | MRP | Qty | D.no | Category | Barcode
+  var tagRows=[['SKU','Code (Variant)','MRP (Rs)','Qty','D.no','Category','Barcode']];
+  billItems.forEach(function(it){
+    tagRows.push([
+      it.sku||'',
+      it.variantCode||'',
+      it.mrp||'',
+      it.qty,
+      it.dNo||'',
+      it.cat||'',
+      it.barcode||''
+    ]);
+  });
+  var ws3=XLSX.utils.aoa_to_sheet(tagRows);
+  ws3['!cols']=[{wch:26},{wch:20},{wch:10},{wch:6},{wch:8},{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Tag Sheet');
+
+  // Sheet 4: Data Transfer — exact import format
+  // Columns: Item Name* | Description | Category | Unit | Alternate Unit | Conversion Rate |
+  //          Item code | HSN Code | GST Tax Rate(%) | Sales Price | Sales Tax inclusive |
+  //          Purchase Price | Purchase Tax inclusive | MRP | Current stock |
+  //          Low stock alert quantity | Item type | Visible on Online Store? |
+  //          Discount | variation code | D.no
+  var dtHeader=[
+    'Item Name*\n(mandatory field)',
+    'Description',
+    'Category',
+    'Unit',
+    'Alternate Unit',
+    'Conversion Rate',
+    'Item code',
+    'HSN Code',
+    'GST Tax Rate(%)',
+    'Sales Price',
+    'Sales Tax inclusive',
+    'Purchase Price',
+    'Purchase Tax inclusive',
+    'MRP',
+    'Current stock',
+    'Low stock alert quantity',
+    'Item type',
+    'Visible on Online Store?',
+    'Discount',
+    'variation code',
+    'D.no'
+  ];
+  var dtRows=[dtHeader];
+  billItems.forEach(function(it){
+    var pp=it.pp||0;
+    var mrp=it.mrp||0;
+    dtRows.push([
+      it.sku||'',          // Item Name*
+      '',                   // Description
+      it.cat||'',          // Category
+      '',                   // Unit
+      '',                   // Alternate Unit
+      '',                   // Conversion Rate
+      it.barcode||'',      // Item code
+      '',                   // HSN Code
+      '',                   // GST Tax Rate(%)
+      mrp,                  // Sales Price
+      mrp,                  // Sales Tax inclusive
+      pp,                   // Purchase Price
+      pp,                   // Purchase Tax inclusive
+      mrp,                  // MRP
+      0,                    // Current stock
+      0.5,                  // Low stock alert quantity
+      '',                   // Item type
+      'NO',                 // Visible on Online Store?
+      '',                   // Discount
+      it.variantCode||'',  // variation code
+      it.dNo||''           // D.no
+    ]);
+  });
+  var ws4=XLSX.utils.aoa_to_sheet(dtRows);
+  ws4['!cols']=[
+    {wch:26},{wch:14},{wch:12},{wch:8},{wch:14},{wch:14},
+    {wch:16},{wch:10},{wch:14},{wch:12},{wch:18},
+    {wch:14},{wch:20},{wch:10},{wch:14},
+    {wch:22},{wch:10},{wch:22},
+    {wch:10},{wch:20},{wch:8}
+  ];
+  XLSX.utils.book_append_sheet(wb,ws4,'Data Transfer');
+
+  // Filename always includes party + date + invoice no
+  var datePart=invDate||new Date().toISOString().slice(0,10);
+  var fname=[party||'bill',datePart,invNo||''].filter(Boolean).join('-').replace(/\s/g,'-')+'.xlsx';
+  XLSX.writeFile(wb,fname);
+  showAlert('Excel downloaded: '+fname);
+}
+
+function openPhotoSheet(party, invNo, invDate){
+  var itemsWithPhoto = billItems.filter(function(it){ return it.photo; });
+  if(!itemsWithPhoto.length) return;
+
+  var cards = itemsWithPhoto.map(function(it){
+    return '<div style="border:1px solid #eee;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.08)">'
+      +'<img src="'+it.photo+'" style="width:100%;height:180px;object-fit:cover;display:block">'
+      +'<div style="padding:10px 12px">'
+      +'<div style="font-family:monospace;font-size:12px;font-weight:700;color:#72243E;margin-bottom:4px">'+it.sku+'</div>'
+      +(it.brand?'<div style="font-size:11px;color:#aaa;margin-bottom:2px">'+it.brand+'</div>':'')
+      +'<div style="font-size:12px;color:#333;margin-bottom:4px">'+it.color+' &nbsp;·&nbsp; Size: '+it.size+'</div>'
+      +(it.barcode?'<div style="font-family:monospace;font-size:10px;color:#bbb">'+it.barcode+'</div>':'')
+      +'<div style="margin-top:8px;padding-top:8px;border-top:1px solid #f5f5f5;display:flex;justify-content:space-between">'
+      +'<span style="font-size:12px;color:#555">Purchase: <strong>Rs'+Number(it.pp).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</strong></span>'
+      +(it.mrp?'<span style="font-size:12px;color:#888">MRP: Rs'+Number(it.mrp).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>':'')
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<title>Photos — '+party+' / '+invNo+'</title>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f8f0f4;padding:20px}'
+    +'.header{background:#72243E;color:#fff;padding:16px 20px;border-radius:10px;margin-bottom:20px}'
+    +'.header h1{font-size:18px;font-weight:600;margin-bottom:4px}'
+    +'.header p{font-size:13px;opacity:0.75}'
+    +'.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}'
+    +'@media(max-width:480px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}}'
+    +'@media print{body{background:#fff}.header{background:#72243E;-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
+    +'</style>'
+    +'<button onclick="window.print()" style="position:fixed;bottom:20px;right:20px;background:#72243E;color:#fff;border:none;border-radius:50px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:99">&#128424; Print Photos</button>'
+    +'</head><body>'
+    +'<div class="header">'
+    +'<h1>Item Photos — '+party+'</h1>'
+    +'<p>Invoice: '+invNo+' &nbsp;|&nbsp; Date: '+invDate+' &nbsp;|&nbsp; '+itemsWithPhoto.length+' items with photos</p>'
+    +'</div>'
+    +'<div class="grid">'+cards+'</div>'
+    +'</body></html>';
+
+  var blob = new Blob([html], {type:'text/html'});
+  var url = URL.createObjectURL(blob);
+  var w = window.open(url,'_blank');
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+}
+
+// Master lists
+function quickAdd(key){
+  var map={brand:'quick-brand',cat:'quick-cat',color:'quick-color',size:'quick-size'};
+  var el=document.getElementById(map[key]);
+  var val=el.value.trim();
+  if(!val)return;
+  if(S[key].map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())>=0){showAlert('Already exists','danger');return;}
+  S[key].push(val);el.value='';persist();
+  buildBrandDatalist();populateCatSelect();buildChips();
+  showAlert('"'+val+'" saved');
+}
+
+function addMaster(key){
+  var map={brand:'new-brand',cat:'new-cat',color:'new-color',size:'new-size'};
+  var el=document.getElementById(map[key]);
+  var val=el.value.trim();
+  if(!val)return;
+  if(S[key].map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())>=0){showAlert('Already exists','danger');return;}
+  S[key].push(val);el.value='';persist();
+  renderAllPills();buildBrandDatalist();populateCatSelect();buildChips();
+  showAlert('"'+val+'" added');
+}
+
+function removeMaster(key,i){
+  S[key].splice(i,1);persist();renderAllPills();buildBrandDatalist();populateCatSelect();buildChips();
+}
+
+function renderAllPills(){
+  var map={brand:'brand-pills',cat:'cat-pills',color:'color-pills',size:'size-pills'};
+  Object.keys(map).forEach(function(key){
+    document.getElementById(map[key]).innerHTML=S[key].map(function(v,i){
+      return '<span class="pill">'+v+'<span class="pill-x" onclick="removeMaster(\''+key+'\','+i+')">&#215;</span></span>';
+    }).join('');
+  });
+}
+
+function buildBrandDatalist(){
+  document.getElementById('brand-list').innerHTML=S.brand.map(function(b){return '<option value="'+b+'">';}).join('');
+}
+
+function populateCatSelect(){
+  ['ai-cat','mx-cat','bf-cat'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    var v=el.value;
+    el.innerHTML='<option value="">-- Category --</option>'+S.cat.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+    if(v) el.value=v;
+  });
+}
+function populateCatSelects(){ populateCatSelect(); }
+
+function buildChips(){
+  var cc=document.getElementById('color-chips');
+  var sc=document.getElementById('size-chips');
+  cc.innerHTML='<span class="toggle-chip all-btn" id="all-color" onclick="toggleAll(\'color\')">All colours</span>'
+    +S.color.map(function(v){return '<span class="toggle-chip'+(selColors.has(v)?' on':'')+'" onclick="toggleChip(\'color\',\''+v+'\',this)">'+v+'</span>';}).join('');
+  sc.innerHTML='<span class="toggle-chip all-btn" id="all-size" onclick="toggleAll(\'size\')">All sizes</span>'
+    +S.size.map(function(v){return '<span class="toggle-chip'+(selSizes.has(v)?' on':'')+'" onclick="toggleChip(\'size\',\''+v+'\',this)">'+v+'</span>';}).join('');
+  updateAllBtn('color');updateAllBtn('size');updatePreview();
+}
+
+function toggleChip(type,val,el){
+  var set=type==='color'?selColors:selSizes;
+  if(set.has(val)){set.delete(val);el.classList.remove('on');}
+  else{set.add(val);el.classList.add('on');}
+  updateAllBtn(type);updatePreview();
+}
+
+function toggleAll(type){
+  var set=type==='color'?selColors:selSizes;
+  var allOn=S[type].every(function(v){return set.has(v);});
+  if(allOn)set.clear();else S[type].forEach(function(v){set.add(v);});
+  buildChips();
+}
+
+function updateAllBtn(type){
+  var set=type==='color'?selColors:selSizes;
+  var btn=document.getElementById('all-'+type);
+  if(!btn)return;
+  var allOn=S[type].length>0&&S[type].every(function(v){return set.has(v);});
+  btn.classList.toggle('on',allOn);
+  btn.textContent=allOn?'Deselect all':'All '+type+'s';
+}
+
+function updatePreview(){
+  var c=selColors.size,s=selSizes.size;
+  var p=document.getElementById('preview-count');
+  p.textContent=c&&s?c+' colour(s) x '+s+' size(s) = '+(c*s)+' SKU rows will be added'
+    :c?c+' colour(s) selected - also pick sizes'
+    :s?s+' size(s) selected - also pick colours':'';
+}
+
+// ── ITEM PHOTO (per SKU row) ──
+function setItemPhoto(idx, input){
+  var file = input.files && input.files[0];
+  if(!file) return;
+  // Compress image before storing to keep localStorage small
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var canvas = document.createElement('canvas');
+      var MAX = 400;
+      var w = img.width, h = img.height;
+      if(w > h){ if(w>MAX){h=Math.round(h*MAX/w);w=MAX;} }
+      else { if(h>MAX){w=Math.round(w*MAX/h);h=MAX;} }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      billItems[idx].photo = canvas.toDataURL('image/jpeg', 0.75);
+      renderBill();
+      renderSummary();
+      showAlert('Photo added to '+billItems[idx].sku);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+function removeItemPhoto(idx){
+  billItems[idx].photo = '';
+  renderBill();
+  renderSummary();
+}
+
+function clearArticlePhoto(){ /* no-op — kept for compatibility */ }
+
+function resolveCat(cat){ return (cat&&cat.trim())||''; }
+
+// ── BILL-LEVEL PURCHASE PRICE MODE ──
+var ppMode='direct'; // 'direct' | 'gst' | 'mrp'
+
+function setPPMode(mode){
+  ppMode=mode;
+  ['direct','gst','mrp'].forEach(function(m){
+    var btn=document.getElementById('pp-mode-btn-'+m);
+    var panel=document.getElementById('pp-panel-'+m);
+    if(btn) btn.style.background=m===mode?'#166534':'#fff';
+    if(btn) btn.style.color=m===mode?'#fff':'#166534';
+    if(panel) panel.style.display=m===mode?'':'none';
+  });
+  updatePPPreview();
+}
+
+// Given entered price, return actual net purchase cost — always rounded UP to nearest rupee
+function getBillNetPP(enteredPrice){
+  var result;
+  if(ppMode==='gst'){
+    var pct=parseFloat(document.getElementById('bill-gst-pct').value)||0;
+    result=enteredPrice*(1+pct/100);
+  } else if(ppMode==='mrp'){
+    var disc=parseFloat(document.getElementById('bill-mrp-disc').value)||0;
+    result=enteredPrice*(1-disc/100);
+  } else {
+    result=enteredPrice;
+  }
+  // Round UP to nearest whole rupee (e.g. 96.12 → 97, 93.8 → 94, 100 → 100)
+  return Math.ceil(result);
+}
+
+function setBillGst(pct){
+  document.getElementById('bill-gst-pct').value=pct;
+  updatePPPreview();
+}
+
+function updateGstPreview(){ updatePPPreview(); } // alias for old calls
+
+function updatePPPreview(){
+  var el=document.getElementById('pp-preview');
+  if(!el) return;
+  var eg=100;
+  if(ppMode==='direct'){
+    el.textContent='Example: enter Rs 100 → purchase cost = Rs 100';
+  } else if(ppMode==='gst'){
+    var pct=parseFloat(document.getElementById('bill-gst-pct').value)||0;
+    var cost=Math.ceil(eg*(1+pct/100));
+    el.textContent='Example: enter Rs '+eg+' + '+pct+'% GST → purchase cost = Rs '+cost+' (rounded up)';
+  } else if(ppMode==='mrp'){
+    var disc=parseFloat(document.getElementById('bill-mrp-disc').value)||0;
+    var cost2=Math.ceil(eg*(1-disc/100));
+    el.textContent='Example: enter MRP Rs '+eg+' − '+disc+'% → purchase cost = Rs '+cost2+' (rounded up)';
+  }
+}
+
+// Inline category add — works for any mode's select+input pair
+function quickAddCat(selectId, inputId){
+  var el=document.getElementById(inputId);
+  var val=el.value.trim();
+  if(!val){showAlert('Type a category name first','danger');return;}
+  if(S.cat.map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())>=0){
+    showAlert('"'+val+'" already exists — select it from the dropdown','danger');
+    // Auto-select it in the dropdown
+    var sel=document.getElementById(selectId);
+    if(sel) sel.value=val;
+    el.value='';
+    return;
+  }
+  S.cat.push(val);
+  persist();
+  populateCatSelects();  // refresh all cat dropdowns
+  renderAllPills();
+  // Auto-select the new category in this dropdown
+  var sel=document.getElementById(selectId);
+  if(sel) sel.value=val;
+  el.value='';
+  showAlert('"'+val+'" added and selected');
+}
+
+function generateRows(){
+  var article=document.getElementById('ai-article').value.trim().toUpperCase();
+  var brand=document.getElementById('ai-brand').value.trim();
+  var pp=parseFloat(document.getElementById('ai-pp').value)||0;
+  var mrp=parseFloat(document.getElementById('ai-mrp').value)||0;
+  var cat=document.getElementById('ai-cat').value;
+  var invNo=document.getElementById('inv-no').value||'';
+  var partyCode=document.getElementById('p-code').value.trim().toUpperCase()||'XX';
+  if(!article){showAlert('Enter article / code','danger');return;}
+  if(!pp){showAlert('Purchase price is required','danger');return;}
+  if(!selColors.size||!selSizes.size){showAlert('Select at least one colour and one size','danger');return;}
+  if(!document.getElementById('p-code').value.trim()){showAlert('Enter Party Code first (near Party Name)','danger');return;}
+  var added=0;
+  Array.from(selColors).forEach(function(col){
+    Array.from(selSizes).forEach(function(sz){
+      var sku=article+'-'+col.toUpperCase().replace(/\s/g,'')+'-'+sz;
+      var barcode = barcodeRequired ? generateUniqueBarcode(sku, invNo, partyCode) : '';
+      // Variant code: PARTYCODE-BRANDSHORT-PP/25
+      // e.g. party=11, brand=soie, pp=375 → 375/25=15 → "11-soie-15"
+      var brandUpper=(brand||'XX').toUpperCase().replace(/\s+/g,'').slice(0,8);
+      var netPP=getBillNetPP(pp);
+      var ppCode=(netPP/variantDivisor).toFixed(2);
+      var variantCode=partyCode.toLowerCase()+'-'+brandUpper+'-'+ppCode;
+      var dNo=dNoCounter;
+      dNoCounter++;
+      billItems.push({dNo:dNo,sku:sku,barcode:barcode,variantCode:variantCode,photo:'',article:article,brand:brand,color:col,size:sz,cat:resolveCat(cat),qty:1,pp:netPP,mrp:mrp,total:netPP});
+      added++;
+    });
+  });
+  persist();
+  renderBill();renderSummary();
+  showAlert(added+' items added'+(barcodeRequired?' — '+added+' unique barcodes generated':' — no barcodes (barcode OFF)'));
+  clearEntry();
+}
+
+function clearEntry(){
+  ['ai-article','ai-brand','ai-pp','ai-mrp'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('ai-cat').value='';
+  selColors.clear();selSizes.clear();buildChips();
+  clearArticlePhoto();
+}
+
+function updateQty(i,val){
+  var q=parseFloat(val)||1;
+  billItems[i].qty=q;
+  billItems[i].total=q*billItems[i].pp;
+  var el=document.getElementById('row-total-'+i);
+  if(el)el.textContent='Rs'+fmt(billItems[i].total);
+  renderSummary();
+}
+
+function updatePP(i,val){
+  var pp=parseFloat(val)||0;
+  var old=billItems[i].pp;
+  if(pp===old) return;
+  if(!confirm('Change purchase price for '+billItems[i].sku+'\nFrom: Rs'+fmt(old)+' → To: Rs'+fmt(pp)+'\n\nVariant code will also update. Continue?')){
+    // revert the input
+    var inputs=document.querySelectorAll('[onchange="updatePP('+i+',this.value)"]');
+    if(inputs.length) inputs[0].value=old;
+    return;
+  }
+  billItems[i].pp=pp;
+  billItems[i].total=billItems[i].qty*pp;
+  var partyCode=(document.getElementById('p-code').value||'xx').trim().toLowerCase();
+  var articleLow=(billItems[i].article||'').toLowerCase();
+  var brandShort=(billItems[i].brand||'xx').toLowerCase().replace(/\s+/g,'').slice(0,6);
+  billItems[i].variantCode=partyCode+'-'+articleLow+'-'+brandShort+'-'+(pp/variantDivisor).toFixed(2);
+  var el=document.getElementById('row-total-'+i);
+  if(el)el.textContent='Rs'+fmt(billItems[i].total);
+  renderSummary();
+  showAlert('Price updated: '+billItems[i].sku+' → Rs'+fmt(pp));
+}
+
+function updateMRP(i,val){
+  var mrp=parseFloat(val)||0;
+  var old=billItems[i].mrp||0;
+  if(mrp===old) return;
+  if(!confirm('Change MRP for '+billItems[i].sku+'\nFrom: Rs'+fmt(old)+' → To: Rs'+fmt(mrp)+'\n\nContinue?')){
+    var inputs=document.querySelectorAll('[onchange="updateMRP('+i+',this.value)"]');
+    if(inputs.length) inputs[0].value=old;
+    return;
+  }
+  billItems[i].mrp=mrp;
+  renderSummary();
+  showAlert('MRP updated: '+billItems[i].sku+' → Rs'+fmt(mrp));
+}
+
+function removeRow(i){billItems.splice(i,1);renderBill();renderSummary();}
+
+function fmt(n){return Number(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function renderBill(){
+  var wrap=document.getElementById('bill-wrap');
+  if(!billItems.length){wrap.style.display='none';return;}
+  wrap.style.display='';
+  var arts=[...new Set(billItems.map(function(it){return it.article;}))];
+  document.getElementById('bill-meta').textContent=billItems.length+' SKUs - '+arts.slice(0,5).join(', ');
+  var groups={};
+  billItems.forEach(function(it,i){
+    var k=(it.brand||'')+'__'+(it.article||it.sku);
+    if(!groups[k])groups[k]=[];
+    groups[k].push({it:it,i:i});
+  });
+  var html='',rowNum=1;
+  Object.keys(groups).forEach(function(key){
+    var g=groups[key];var s=g[0].it;
+    html+='<tr class="grp-header"><td colspan="15">'+(s.brand?'<span class="brand-tag">'+s.brand+'</span> ':'')+s.article+' - '+g.length+' SKUs</td></tr>';
+    g.forEach(function(obj){
+      var it=obj.it,i=obj.i;
+      var bcId='bc-'+i;
+      var photoCell;
+      if(it.photo){
+        photoCell='<td style="width:60px;padding:4px">'
+          +'<div style="position:relative;display:inline-block">'
+          +'<img src="'+it.photo+'" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid #ecd6e0;display:block">'
+          +'<button onclick="removeItemPhoto('+i+')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#c0392b;color:#fff;border:none;cursor:pointer;font-size:10px;line-height:16px;text-align:center;padding:0">&#10005;</button>'
+          +'</div>'
+          +'</td>';
+      } else {
+        photoCell='<td style="width:60px;padding:4px">'
+          +'<div style="display:flex;flex-direction:column;gap:3px">'
+          +'<label style="cursor:pointer;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:5px;padding:2px 5px;font-size:10px;text-align:center;white-space:nowrap">'
+          +'&#128247;<input type="file" accept="image/*" capture="environment" style="display:none" onchange="setItemPhoto('+i+',this)">'
+          +'</label>'
+          +'<label style="cursor:pointer;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:5px;padding:2px 5px;font-size:10px;text-align:center;white-space:nowrap">'
+          +'&#128193;<input type="file" accept="image/*" style="display:none" onchange="setItemPhoto('+i+',this)">'
+          +'</label>'
+          +'</div>'
+          +'</td>';
+      }
+      html+='<tr>'
+        +'<td style="color:#bbb">'+(rowNum++)+'</td>'
+        +'<td style="text-align:center"><span style="font-family:monospace;font-size:11px;background:#eef4ff;color:#1a3a6e;border:1px solid #b3ccf5;border-radius:4px;padding:2px 6px;font-weight:700">'+(it.dNo||'—')+'</span></td>'
+        +photoCell
+        +'<td><span style="font-family:monospace;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:4px;padding:2px 6px;white-space:nowrap">'+(it.variantCode||'—')+'</span></td>'
+        +'<td style="min-width:110px"><svg id="'+bcId+'" style="display:block"></svg><div style="font-family:monospace;font-size:9px;color:#888;text-align:center;margin-top:1px">'+(it.barcode||'')+'</div></td>'
+        +'<td>'+(it.brand?'<span class="brand-tag">'+it.brand+'</span>':'-')+'</td>'
+        +'<td><span class="sku-tag">'+it.sku+'</span></td>'
+        +'<td>'+it.color+'</td>'
+        +'<td><span class="size-chip">'+it.size+'</span></td>'
+        +'<td style="color:#aaa">'+(it.cat||'-')+'</td>'
+        +'<td style="text-align:right"><input type="number" value="'+it.qty+'" min="1" style="width:54px;height:28px;padding:0 6px;font-size:12px;text-align:center;border:1px solid #e0cdd5;border-radius:6px" onchange="updateQty('+i+',this.value)"></td>'
+        +'<td style="text-align:right"><input type="number" value="'+it.pp+'" min="0" step="0.01" style="width:72px;height:28px;padding:0 6px;font-size:12px;text-align:right;border:1px solid #e0cdd5;border-radius:6px" onchange="updatePP('+i+',this.value)" title="Edit purchase price"></td>'
+        +'<td style="text-align:right"><input type="number" value="'+(it.mrp||'')+'" min="0" step="0.01" style="width:72px;height:28px;padding:0 6px;font-size:12px;text-align:right;border:1px solid #e0cdd5;border-radius:6px" onchange="updateMRP('+i+',this.value)" title="Edit MRP / sales price"></td>'
+        +'<td style="text-align:right;font-weight:600" id="row-total-'+i+'">Rs'+fmt(it.total)+'</td>'
+        +'<td><button class="btn btn-danger btn-sm" onclick="removeRow('+i+')" style="padding:0;width:28px;height:28px">x</button></td>'
+        +'</tr>';
+    });
+  });
+  document.getElementById('bill-body').innerHTML=html;
+  // Render barcodes after DOM update
+  setTimeout(function(){
+    billItems.forEach(function(it,i){
+      if(!it.barcode) return;
+      var el=document.getElementById('bc-'+i);
+      if(!el) return;
+      try{
+        JsBarcode(el, it.barcode, {format:'CODE128',width:1.2,height:36,displayValue:false,margin:2});
+      }catch(e){ el.style.display='none'; }
+    });
+  },0);
+}
+
+function clearAllItems(){if(!confirm('Remove all items from bill?'))return;billItems=[];renderBill();renderSummary();}
+
+function renderSummary(){
+  var sc=document.getElementById('summary-card');
+  var sb=document.getElementById('sticky-bar');
+  if(!billItems.length){
+    sc.style.display='none';
+    if(sb) sb.style.display='none';
+    document.body.style.paddingBottom='';
+    return;
+  }
+  sc.style.display='';
+  if(sb){
+    sb.style.display='';
+    document.body.style.paddingBottom='70px';
+    var cnt=document.getElementById('sticky-count');
+    if(cnt) cnt.textContent=billItems.length+' SKUs';
+  }
+  // Show/hide image download buttons (both in summary card and sticky bar)
+  var hasPhotos=billItems.some(function(it){return it.photo;});
+  var imgBtn=document.getElementById('img-dl-btn');
+  var sumImgBtn=document.getElementById('sum-img-btn');
+  if(imgBtn) imgBtn.style.display=hasPhotos?'':'none';
+  if(sumImgBtn) sumImgBtn.style.display=hasPhotos?'':'none';
+  var tQty=billItems.reduce(function(s,it){return s+it.qty;},0);
+  var tAmt=billItems.reduce(function(s,it){return s+it.total;},0);
+  var tMrp=billItems.reduce(function(s,it){return s+(it.mrp*it.qty);},0);
+  var arts=[...new Set(billItems.map(function(it){return it.article;}))].length;
+  var brands=[...new Set(billItems.map(function(it){return it.brand;}).filter(Boolean))];
+  document.getElementById('summary-content').innerHTML=
+    (brands.length?'<div class="total-row"><span style="color:#888">Brands</span><span>'+brands.join(', ')+'</span></div>':'')
+    +'<div class="total-row"><span style="color:#888">Articles</span><span>'+arts+'</span></div>'
+    +'<div class="total-row"><span style="color:#888">Total SKUs</span><span>'+billItems.length+'</span></div>'
+    +'<div class="total-row"><span style="color:#888">Total Qty</span><span>'+tQty+' pcs</span></div>'
+    +(tMrp?'<div class="total-row"><span style="color:#888">Total MRP Value</span><span>Rs'+fmt(tMrp)+'</span></div>':'')
+    +'<div class="total-row grand"><span>Total Purchase Amount</span><span>Rs'+fmt(tAmt)+'</span></div>';
+  refreshWaInfo();
+}
+
+function clearBill(){
+  if(billItems.length){
+    var doSave=confirm('Save this bill to History before clearing?');
+    if(doSave) saveBillToHistory();
+  }
+  billItems=[];renderBill();renderSummary();
+  ['p-name','p-code','p-mobile','p-addr','p-gst','inv-no'].forEach(function(id){document.getElementById(id).value='';});
+  setPPMode('direct');
+  showAlert('Bill cleared — ready for new bill');
+}
+
+function svgToPngDataUrl(barcode){
+  // Render barcode to a temp off-screen SVG, then draw to canvas, return dataURL
+  try{
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    document.body.appendChild(svg);
+    JsBarcode(svg, barcode, {format:'CODE128',width:1.5,height:40,displayValue:false,margin:4,background:'#ffffff',lineColor:'#000000'});
+    var svgData=new XMLSerializer().serializeToString(svg);
+    document.body.removeChild(svg);
+    var canvas=document.createElement('canvas');
+    var svgBlob=new Blob([svgData],{type:'image/svg+xml;charset=utf-8'});
+    var url=URL.createObjectURL(svgBlob);
+    // Return a promise that resolves to dataURL
+    return new Promise(function(resolve){
+      var img=new Image();
+      img.onload=function(){
+        canvas.width=img.width;canvas.height=img.height;
+        var ctx=canvas.getContext('2d');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);resolve('');};
+      img.src=url;
+    });
+  }catch(e){return Promise.resolve('');}
+}
+
+function buildPrintHTML(items){
+  // items param allows passing history bill items; falls back to billItems
+  var src=items||billItems;
+  var party=document.getElementById('p-name').value||'Party';
+  var mobile=document.getElementById('p-mobile').value;
+  var addr=document.getElementById('p-addr').value;
+  var gst=document.getElementById('p-gst').value;
+  var invNo=document.getElementById('inv-no').value;
+  var invDate=document.getElementById('inv-date').value;
+  var tAmt=src.reduce(function(s,it){return s+it.total;},0);
+  var tQty=src.reduce(function(s,it){return s+it.qty;},0);
+  var tMrp=src.reduce(function(s,it){return s+(it.mrp*it.qty);},0);
+  var groups={};
+  src.forEach(function(it,i){
+    var k=(it.brand||'')+'__'+(it.article||it.sku);
+    if(!groups[k])groups[k]=[];
+    groups[k].push({it:it,i:i});
+  });
+  var rows='',rn=1;
+  Object.keys(groups).forEach(function(key){
+    var g=groups[key];var s=g[0].it;
+    rows+='<tr><td colspan="12" class="grp">'+(s.brand?s.brand+' - ':'')+s.article+'</td></tr>';
+    g.forEach(function(obj){
+      var it=obj.it;
+      var bcCell=it.barcode
+        ?'<td style="font-family:monospace;font-size:11px;font-weight:600;color:#333;letter-spacing:1px">'+it.barcode+'</td>'
+        :'<td style="color:#bbb;font-size:11px;text-align:center">—</td>';
+      var photoCell=it.photo
+        ?'<td style="width:52px;padding:3px"><img src="'+it.photo+'" style="width:48px;height:48px;object-fit:cover;border-radius:4px;border:1px solid #eee;display:block"></td>'
+        :'<td style="color:#ddd;text-align:center;font-size:10px">—</td>';
+      rows+='<tr>'
+        +'<td>'+rn+++'</td>'
+        +'<td style="font-family:monospace;font-size:11px;font-weight:700;color:#1a3a6e">'+(it.dNo||'—')+'</td>'
+        +photoCell
+        +'<td style="font-family:monospace;font-size:10px;color:#e65100;font-weight:600">'+(it.variantCode||'—')+'</td>'
+        +bcCell
+        +'<td style="font-family:monospace;font-size:10px">'+it.sku+'</td>'
+        +'<td>'+(it.brand||'-')+'</td>'
+        +'<td>'+it.color+'</td>'
+        +'<td>'+it.size+'</td>'
+        +'<td>'+(it.cat||'-')+'</td>'
+        +'<td style="text-align:right">'+it.qty+'</td>'
+        +'<td style="text-align:right">Rs'+fmt(it.pp)+'</td>'
+        +'<td style="text-align:right">'+(it.mrp?'Rs'+fmt(it.mrp):'-')+'</td>'
+        +'<td style="text-align:right;font-weight:700">Rs'+fmt(it.total)+'</td>'
+        +'</tr>';
+    });
+  });
+  return '<h2>Purchase Bill</h2>'
+    +'<p class="sub">Invoice: <strong>'+(invNo||'--')+'</strong> &nbsp;|&nbsp; Date: <strong>'+(invDate||'--')+'</strong></p>'
+    +'<div class="pb-grid"><div><p class="section-label">Supplier / Party</p><strong>'+party+'</strong>'
+    +(mobile?'<p>'+mobile+'</p>':'')+(addr?'<p>'+addr.replace(/\n/g,'<br>')+'</p>':'')+(gst?'<p><strong>GST:</strong> '+gst+'</p>':'')+'</div>'
+    +'<div style="text-align:right"><p class="section-label">Bill Summary</p><p><strong>SKUs:</strong> '+src.length+'</p><p><strong>Total Qty:</strong> '+tQty+' pcs</p>'+(tMrp?'<p><strong>Total MRP:</strong> Rs'+fmt(tMrp)+'</p>':'')+'</div></div>'
+    +'<table class="print-tbl"><thead><tr><th>#</th><th>D.no</th><th>Photo</th><th>Variant Code</th><th>Barcode</th><th>SKU</th><th>Brand</th><th>Colour</th><th>Size</th><th>Category</th><th style="text-align:right">Qty</th><th style="text-align:right">Purchase Rs</th><th style="text-align:right">MRP Rs</th><th style="text-align:right">Total Rs</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div class="print-totals"><div class="pt-row"><span>Total Qty</span><span>'+tQty+' pcs</span></div><div class="pt-row"><span>Total SKUs</span><span>'+src.length+'</span></div>'+(tMrp?'<div class="pt-row"><span>Total MRP</span><span>Rs'+fmt(tMrp)+'</span></div>':'')+'<div class="pt-row pt-grand"><span>Total Purchase Amount</span><span>Rs'+fmt(tAmt)+'</span></div></div>'
+    +'<div class="print-footer">Purchase Bill - Lingerie Store &nbsp;|&nbsp; '+new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})+'</div>';
+}
+
+// Injects PNG barcode images into all pbc-img-N elements in the print container
+function injectBarcodeImages(src, callback){
+  var items=src||billItems;
+  var barcoded=items.filter(function(it){return it.barcode;});
+  if(!barcoded.length){callback();return;}
+  var pending=0;
+  var imgIdx=1;
+  items.forEach(function(it){
+    var idx=imgIdx++;
+    if(!it.barcode) return;
+    pending++;
+    svgToPngDataUrl(it.barcode).then(function(dataUrl){
+      var el=document.getElementById('pbc-img-'+idx);
+      if(el&&dataUrl) el.src=dataUrl;
+      pending--;
+      if(pending===0) callback();
+    });
+  });
+}
+
+function showPrintPreview(){
+  if(!billItems.length){showAlert('No items in bill — add items first','danger');return;}
+  downloadPDF();
+}
+
+function closeModal(){document.getElementById('printModal').style.display='none';}
+
+var PRINT_CSS='*{box-sizing:border-box;margin:0;padding:0}'
+  +'body{font-family:Arial,sans-serif;font-size:12px;padding:20px;color:#111;background:#fff}'
+  +'h2{font-size:18px;font-weight:700;color:#72243E;margin-bottom:3px}'
+  +'.sub{font-size:11px;color:#666;margin-bottom:12px}'
+  +'.pb-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#fafafa;border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:14px}'
+  +'.pb-grid p{font-size:11px;margin:2px 0;color:#444}'
+  +'.pb-grid strong{font-size:12px;color:#111;display:block;margin-bottom:3px}'
+  +'.section-label{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}'
+  +'table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:14px}'
+  +'th{background:#FBEAF0;color:#72243E;padding:5px 6px;text-align:left;font-weight:700;border-bottom:2px solid #D4537E;font-size:10px;text-transform:uppercase}'
+  +'td{padding:4px 6px;border-bottom:1px solid #f0e4ea;vertical-align:middle}'
+  +'.grp{background:#f9f0f4;font-weight:700;color:#993556;font-size:10px;padding:3px 6px}'
+  +'.print-totals{margin-left:auto;width:240px;border-top:1px solid #eee;padding-top:8px}'
+  +'.pt-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px}'
+  +'.pt-grand{font-weight:700;font-size:14px;border-top:2px solid #D4537E;padding-top:6px;margin-top:4px;color:#72243E}'
+  +'.print-footer{text-align:center;font-size:10px;color:#aaa;margin-top:16px;border-top:1px solid #eee;padding-top:10px}'
+  +'img{max-width:100%;display:block}'
+  +'@media print{'
+  +'  body{padding:8px}'
+  +'  @page{size:A4;margin:10mm}'
+  +'  .no-print{display:none!important}'
+  +'}';
+
+function makePdfName(party, invDate, invNo){
+  var parts=[
+    (party||'Bill').replace(/\s+/g,'-'),
+    (invDate||new Date().toISOString().slice(0,10)),
+    (invNo||'')
+  ].filter(Boolean);
+  return parts.join('_')+'.pdf';
+}
+
+function openBillWindow(htmlContent, title, pdfName){
+  var w=window.open('','_blank');
+  if(!w){showAlert('Allow popups for this page, then try again','danger');return;}
+  var safeTitle=title||'Purchase Bill';
+  var safePdfName=pdfName||'Purchase-Bill.pdf';
+  var backBtn='<button onclick="window.close()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer">&#8592; Back</button>';
+  var shareBtn='<button onclick="shareBill()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer">&#128226; Share</button>';
+  var printBtn='<button onclick="window.print()" style="background:#fff;color:#72243E;border:none;border-radius:6px;padding:6px 18px;font-size:13px;font-weight:700;cursor:pointer">&#128424; Print / Save PDF</button>';
+  w.document.write(
+    '<!DOCTYPE html><html><head>'
+    +'<meta charset="UTF-8">'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<title>'+safePdfName.replace('.pdf','')+'</title>'
+    +'<style>'+PRINT_CSS+'</style>'
+    +'</head><body>'
+    +'<div class="no-print" style="background:#72243E;color:#fff;padding:10px 16px;margin:-20px -20px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+    +'<div>'
+    +'<div style="font-size:14px;font-weight:700">'+safeTitle+'</div>'
+    +'<div style="font-size:11px;opacity:0.7;margin-top:2px">When printing → choose Save as PDF → filename: '+safePdfName+'</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +backBtn
+    +shareBtn
+    +printBtn
+    +'</div>'
+    +'</div>'
+    +htmlContent
+    +'<scr'+'ipt>'
+    +'function shareBill(){'
+    +'  var name="'+safePdfName.replace(/'/g,"\\'")+'";'
+    +'  if(navigator.share){'
+    +'    navigator.share({title:"'+safeTitle.replace(/"/g,'\\"')+'",text:"Purchase Bill - '+safeTitle.replace(/"/g,'\\"')+'",url:window.location.href})'
+    +'    .catch(function(){});'
+    +'  } else {'
+    +'    try{navigator.clipboard.writeText(window.location.href);alert("Link copied! Paste it in WhatsApp or email to share.");}catch(e){alert("To share: copy this page URL from your browser address bar."); }'
+    +'  }'
+    +'}'
+    +'<\/sc'+'ript>'
+    +'</body></html>'
+  );
+  w.document.close();
+  setTimeout(function(){w.focus();w.print();},400);
+}
+
+function downloadPDF(){
+  if(!billItems.length){showAlert('No items in bill','danger');return;}
+  var party=document.getElementById('p-name').value||'Bill';
+  var invNo=document.getElementById('inv-no').value||'';
+  var invDate=document.getElementById('inv-date').value||'';
+  var pdfName=makePdfName(party,invDate,invNo);
+  var title=party+(invNo?' / '+invNo:'')+(invDate?' ('+invDate+')':'');
+  openBillWindow(buildPrintHTML(), title, pdfName);
+}
+
+function printDirect(){
+  downloadPDF();
+}
+
+// ── HISTORY ──
+var billHistory=[];  // [{id, savedAt, party, partyCode, mobile, addr, gst, invNo, invDate, items:[...]}]
+var histViewIdx=-1;  // which bill is open in modal
+var histEditMode=false;
+
+try{
+  var hd=localStorage.getItem('lingHistory1');
+  if(hd) billHistory=JSON.parse(hd);
+}catch(e){}
+
+function persistHistory(){
+  try{localStorage.setItem('lingHistory1',JSON.stringify(billHistory));}catch(e){}
+}
+
+function saveBillToHistory(){
+  if(!billItems.length){showAlert('No items to save','danger');return;}
+  var party=document.getElementById('p-name').value.trim();
+  if(!party){showAlert('Enter party name before saving','danger');return;}
+  var bill={
+    id: Date.now(),
+    savedAt: new Date().toISOString(),
+    party: party,
+    partyCode: document.getElementById('p-code').value.trim().toUpperCase(),
+    mobile: document.getElementById('p-mobile').value.trim(),
+    addr: document.getElementById('p-addr').value.trim(),
+    gst: document.getElementById('p-gst').value.trim().toUpperCase(),
+    invNo: document.getElementById('inv-no').value.trim(),
+    invDate: document.getElementById('inv-date').value,
+    items: billItems.map(function(it){return Object.assign({},it);})
+  };
+  billHistory.unshift(bill);
+  persistHistory();
+  updateHistBadge();
+  showAlert('Bill saved to history');
+}
+
+function updateHistBadge(){
+  var b=document.getElementById('hist-badge');
+  if(!b) return;
+  if(billHistory.length){b.textContent=billHistory.length;b.style.display='inline';}
+  else b.style.display='none';
+}
+
+function renderHistory(){
+  var q=(document.getElementById('hist-search').value||'').toLowerCase();
+  var list=billHistory.filter(function(b){
+    return !q||(b.party+b.invNo+b.partyCode+b.gst).toLowerCase().includes(q);
+  });
+  var empty=document.getElementById('hist-empty');
+  var listEl=document.getElementById('hist-list');
+  if(!list.length){
+    empty.style.display='block';listEl.innerHTML='';return;
+  }
+  empty.style.display='none';
+  listEl.innerHTML=list.map(function(bill){
+    var idx=billHistory.indexOf(bill);
+    var tAmt=bill.items.reduce(function(s,it){return s+it.total;},0);
+    var tQty=bill.items.reduce(function(s,it){return s+it.qty;},0);
+    var arts=[...new Set(bill.items.map(function(it){return it.article;}))];
+    var brands=[...new Set(bill.items.map(function(it){return it.brand;}).filter(Boolean))];
+    var dt=new Date(bill.savedAt);
+    var dtStr=dt.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+' '+dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    return '<div class="hist-card">'
+      +'<div class="hist-card-head">'
+      +'<div>'
+      +'<div style="font-weight:600;font-size:14px;color:#3a1020">'+bill.party
+        +(bill.partyCode?'<span style="font-family:monospace;font-size:11px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:8px;padding:1px 7px;margin-left:8px">'+bill.partyCode+'</span>':'')
+      +'</div>'
+      +'<div class="hist-meta">'
+        +(bill.invNo?'Invoice: <strong>'+bill.invNo+'</strong> &nbsp;|&nbsp; ':'')
+        +(bill.invDate?'Date: '+bill.invDate+' &nbsp;|&nbsp; ':'')
+        +'Saved: '+dtStr
+      +'</div>'
+      +'<div class="hist-chips" style="margin-top:6px">'
+        +'<span class="hist-chip">'+bill.items.length+' SKUs</span>'
+        +'<span class="hist-chip">'+tQty+' pcs</span>'
+        +'<span class="hist-chip" style="font-weight:600;color:#72243E">Rs'+fmt(tAmt)+'</span>'
+        +arts.slice(0,3).map(function(a){return '<span class="hist-chip">'+a+'</span>';}).join('')
+        +(arts.length>3?'<span class="hist-chip">+more</span>':'')
+      +'</div>'
+      +'</div>'
+      +'<div class="hist-card-actions">'
+        +'<button class="btn btn-sm btn-pink" onclick="openHistModal('+idx+',false)">View</button>'
+        +'<button class="btn btn-sm" onclick="openHistModal('+idx+',true)">Edit</button>'
+        +'<button class="btn btn-sm" onclick="loadBillFromHistory('+idx+')">Load to Bill</button>'
+        +'<button class="btn btn-sm btn-danger" onclick="deleteHistBill('+idx+')" style="padding:0;width:28px">x</button>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openHistModal(idx, editMode){
+  histViewIdx=idx;
+  histEditMode=false;
+  var bill=billHistory[idx];
+  document.getElementById('hist-modal-title').textContent=(editMode?'Edit':'View')+' — '+bill.party+(bill.invNo?' / '+bill.invNo:'');
+  renderHistModal(bill, editMode);
+  if(editMode) setTimeout(function(){toggleHistEdit();},50);
+  document.getElementById('histModal').style.display='block';
+}
+
+function closeHistModal(){
+  document.getElementById('histModal').style.display='none';
+  histViewIdx=-1;histEditMode=false;
+}
+
+function toggleHistEdit(){
+  histEditMode=!histEditMode;
+  var bill=billHistory[histViewIdx];
+  document.getElementById('hist-edit-btn').textContent=histEditMode?'Cancel Edit':'Edit';
+  document.getElementById('hist-save-btn').style.display=histEditMode?'':'none';
+  renderHistModal(bill, histEditMode);
+}
+
+function renderHistModal(bill, editable){
+  var tAmt=bill.items.reduce(function(s,it){return s+it.total;},0);
+  var tQty=bill.items.reduce(function(s,it){return s+it.qty;},0);
+  var tMrp=bill.items.reduce(function(s,it){return s+(it.mrp*it.qty);},0);
+
+  var partyHtml=editable
+    ?'<div class="g3" style="margin-bottom:12px">'
+      +'<div><span class="lbl">Party Name</span><input id="he-party" value="'+escHtml(bill.party)+'" class="edit-field"></div>'
+      +'<div><span class="lbl">Party Code</span><input id="he-pcode" value="'+escHtml(bill.partyCode||'')+'" class="edit-field" style="font-family:monospace;text-transform:uppercase"></div>'
+      +'<div><span class="lbl">Mobile</span><input id="he-mobile" value="'+escHtml(bill.mobile||'')+'" class="edit-field"></div>'
+      +'</div>'
+      +'<div class="g3" style="margin-bottom:12px">'
+      +'<div><span class="lbl">GST No.</span><input id="he-gst" value="'+escHtml(bill.gst||'')+'" class="edit-field" style="text-transform:uppercase"></div>'
+      +'<div><span class="lbl">Invoice No.</span><input id="he-invno" value="'+escHtml(bill.invNo||'')+'" class="edit-field"></div>'
+      +'<div><span class="lbl">Invoice Date</span><input type="date" id="he-invdate" value="'+(bill.invDate||'')+'" class="edit-field"></div>'
+      +'</div>'
+    :'<div style="background:#fdf5f8;border-radius:8px;padding:12px 16px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      +'<div><span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.4px">Party</span><div style="font-weight:600;font-size:14px">'+escHtml(bill.party)+(bill.partyCode?'<span style="font-family:monospace;font-size:11px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:8px;padding:1px 7px;margin-left:8px">'+bill.partyCode+'</span>':'')+'</div>'
+        +(bill.mobile?'<div style="font-size:12px;color:#666">'+bill.mobile+'</div>':'')+' '
+        +(bill.gst?'<div style="font-size:12px;color:#666">GST: '+bill.gst+'</div>':'')
+      +'</div>'
+      +'<div style="text-align:right"><span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.4px">Invoice</span>'
+        +'<div style="font-weight:600">'+(bill.invNo||'—')+'</div>'
+        +'<div style="font-size:12px;color:#666">'+(bill.invDate||'')+'</div>'
+      +'</div>'
+      +'</div>';
+
+  // Items table
+  var groups={};
+  bill.items.forEach(function(it,i){
+    var k=(it.brand||'')+'__'+(it.article||it.sku);
+    if(!groups[k])groups[k]=[];
+    groups[k].push({it:it,i:i});
+  });
+  var rows='';var rn=1;
+  Object.keys(groups).forEach(function(key){
+    var g=groups[key];var s=g[0].it;
+    rows+='<tr style="background:#fdf5f8"><td colspan="9" style="font-weight:600;font-size:12px;color:#993556;padding:4px 8px">'+(s.brand?s.brand+' · ':'')+s.article+'</td></tr>';
+    g.forEach(function(obj){
+      var it=obj.it,i=obj.i;
+      rows+='<tr>'
+        +'<td style="color:#bbb;font-size:11px">'+(rn++)+'</td>'
+        +'<td style="font-family:monospace;font-size:10px;color:#888">'+(it.barcode||'')+'</td>'
+        +'<td style="font-family:monospace;font-size:11px">'+it.sku+'</td>'
+        +'<td>'+it.color+'</td>'
+        +'<td><span style="background:#f0f0f0;padding:1px 7px;border-radius:10px;font-size:11px">'+it.size+'</span></td>'
+        +(editable
+          ?'<td><input type="number" value="'+it.qty+'" min="1" id="hq-'+i+'" style="width:50px;height:26px;padding:0 4px;font-size:12px;text-align:center;border:1px dashed #D4537E;border-radius:4px" onchange="updateHistQty('+histViewIdx+','+i+',this.value)"></td>'
+          +'<td style="text-align:right">Rs'+fmt(it.pp)+'</td>'
+          +'<td style="text-align:right">'+(it.mrp?'Rs'+fmt(it.mrp):'-')+'</td>'
+          +'<td style="text-align:right;font-weight:600" id="ht-'+i+'">Rs'+fmt(it.total)+'</td>'
+          +'<td><button class="btn btn-danger btn-sm" onclick="deleteHistItem('+histViewIdx+','+i+')" style="padding:0;width:24px;height:24px;font-size:11px">x</button></td>'
+          :'<td style="text-align:right">'+it.qty+'</td>'
+          +'<td style="text-align:right">Rs'+fmt(it.pp)+'</td>'
+          +'<td style="text-align:right">'+(it.mrp?'Rs'+fmt(it.mrp):'-')+'</td>'
+          +'<td style="text-align:right;font-weight:600">Rs'+fmt(it.total)+'</td>'
+          +'<td></td>'
+        )
+        +'</tr>';
+    });
+  });
+
+  var summaryHtml='<div style="display:flex;justify-content:flex-end;margin-top:12px">'
+    +'<div style="width:260px">'
+    +'<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:#888">Total SKUs</span><span>'+bill.items.length+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:#888">Total Qty</span><span>'+tQty+' pcs</span></div>'
+    +(tMrp?'<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:#888">Total MRP</span><span>Rs'+fmt(tMrp)+'</span></div>':'')
+    +'<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:15px;font-weight:700;border-top:2px solid #e8c5d2;margin-top:4px;color:#72243E"><span>Total Purchase</span><span>Rs'+fmt(tAmt)+'</span></div>'
+    +'</div></div>';
+
+  document.getElementById('hist-modal-body').innerHTML=
+    partyHtml
+    +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:560px">'
+    +'<thead><tr>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee">#</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee">Barcode</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee">SKU</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee">Colour</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee">Size</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee;text-align:right">Qty</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee;text-align:right">Purchase</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee;text-align:right">MRP</th>'
+    +'<th style="font-size:10px;color:#aaa;padding:4px 8px;border-bottom:1px solid #eee;text-align:right">Total</th>'
+    +'<th></th>'
+    +'</tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +summaryHtml;
+}
+
+function escHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateHistQty(billIdx, itemIdx, val){
+  var q=parseFloat(val)||1;
+  billHistory[billIdx].items[itemIdx].qty=q;
+  billHistory[billIdx].items[itemIdx].total=q*billHistory[billIdx].items[itemIdx].pp;
+  var el=document.getElementById('ht-'+itemIdx);
+  if(el) el.textContent='Rs'+fmt(billHistory[billIdx].items[itemIdx].total);
+}
+
+function deleteHistItem(billIdx, itemIdx){
+  if(!confirm('Remove this item from bill?')) return;
+  billHistory[billIdx].items.splice(itemIdx,1);
+  renderHistModal(billHistory[billIdx], histEditMode);
+}
+
+function saveHistEdit(){
+  if(histViewIdx<0) return;
+  var bill=billHistory[histViewIdx];
+  var pEl=document.getElementById('he-party');
+  if(pEl){
+    bill.party=pEl.value.trim()||bill.party;
+    bill.partyCode=(document.getElementById('he-pcode').value.trim().toUpperCase())||bill.partyCode;
+    bill.mobile=document.getElementById('he-mobile').value.trim();
+    bill.gst=document.getElementById('he-gst').value.trim().toUpperCase();
+    bill.invNo=document.getElementById('he-invno').value.trim();
+    bill.invDate=document.getElementById('he-invdate').value;
+  }
+  persistHistory();
+  histEditMode=false;
+  document.getElementById('hist-edit-btn').textContent='Edit';
+  document.getElementById('hist-save-btn').style.display='none';
+  renderHistModal(bill, false);
+  renderHistory();
+  showAlert('Bill updated');
+}
+
+function deleteHistBill(idx){
+  if(!confirm('Delete this bill from history?')) return;
+  billHistory.splice(idx,1);
+  persistHistory();
+  updateHistBadge();
+  renderHistory();
+}
+
+function clearAllHistory(){
+  if(!confirm('Delete ALL bill history? This cannot be undone.')) return;
+  billHistory=[];
+  persistHistory();
+  updateHistBadge();
+  renderHistory();
+}
+
+function loadBillFromHistory(idx){
+  var bill=billHistory[idx];
+  if(!confirm('Load this bill into the Purchase Bill form? Current bill will be replaced.')) return;
+  // Populate form
+  document.getElementById('p-name').value=bill.party||'';
+  document.getElementById('p-code').value=bill.partyCode||'';
+  document.getElementById('p-mobile').value=bill.mobile||'';
+  document.getElementById('p-addr').value=bill.addr||'';
+  document.getElementById('p-gst').value=bill.gst||'';
+  document.getElementById('inv-no').value=bill.invNo||'';
+  document.getElementById('inv-date').value=bill.invDate||'';
+  billItems=bill.items.map(function(it){return Object.assign({},it);});
+  renderBill();renderSummary();
+  showTab('bill');
+  showAlert('Bill loaded from history');
+}
+
+function histDownloadExcel(){
+  if(histViewIdx<0) return;
+  var origItems=billItems;
+  billItems=billHistory[histViewIdx].items;
+  downloadExcel();
+  billItems=origItems;
+}
+
+function histSendWhatsApp(){
+  if(histViewIdx<0) return;
+  var b=billHistory[histViewIdx];
+  // Temporarily populate fields for sendWhatsApp
+  var fields={
+    'p-name':b.party,'p-code':b.partyCode,'p-mobile':b.mobile||'',
+    'p-addr':b.addr||'','p-gst':b.gst||'','inv-no':b.invNo||'','inv-date':b.invDate||''
+  };
+  var restore={};
+  Object.keys(fields).forEach(function(id){
+    restore[id]=document.getElementById(id).value;
+    document.getElementById(id).value=fields[id];
+  });
+  var origItems=billItems;
+  billItems=b.items;
+  sendWhatsApp();
+  billItems=origItems;
+  Object.keys(restore).forEach(function(id){document.getElementById(id).value=restore[id];});
+}
+
+function histPrint(){
+  histDownloadPDF();
+}
+
+function histDownloadPDF(){
+  if(histViewIdx<0) return;
+  var b=billHistory[histViewIdx];
+  var restore={};
+  var fields={'p-name':b.party,'p-code':b.partyCode||'','p-mobile':b.mobile||'','p-addr':b.addr||'','p-gst':b.gst||'','inv-no':b.invNo||'','inv-date':b.invDate||''};
+  Object.keys(fields).forEach(function(id){restore[id]=document.getElementById(id).value;document.getElementById(id).value=fields[id];});
+  var origItems=billItems;
+  billItems=b.items;
+  var html=buildPrintHTML(b.items);
+  billItems=origItems;
+  Object.keys(restore).forEach(function(id){document.getElementById(id).value=restore[id];});
+  var pdfName=makePdfName(b.party,b.invDate,b.invNo);
+  var title=(b.party||'Bill')+(b.invNo?' / '+b.invNo:'')+(b.invDate?' ('+b.invDate+')':'');
+  openBillWindow(html, title, pdfName);
+}
+
+// ── MATRIX ENTRY MODE ──
+var currentEntryMode='quick';
+var matrixColors=[], matrixSizes=[];
+
+function setEntryMode(mode){
+  currentEntryMode=mode;
+  document.getElementById('mode-quick').className='btn btn-sm'+(mode==='quick'?' btn-pink':'');
+  document.getElementById('mode-matrix').className='btn btn-sm'+(mode==='matrix'?' btn-pink':'');
+  document.getElementById('mode-bill').className='btn btn-sm'+(mode==='bill'?' btn-pink':'');
+  document.querySelector('.fast-box').style.display=mode==='quick'?'':'none';
+  document.getElementById('matrix-box').style.display=mode==='matrix'?'':'none';
+  document.getElementById('bill-format-box').style.display=mode==='bill'?'':'none';
+  if(mode==='matrix'){
+    populateCatSelect();
+  }
+  if(mode==='bill'){
+    populateCatSelect();
+    // Add 5 blank starter rows if empty
+    if(!bfRows.length){
+      for(var i=0;i<5;i++) addBfRow();
+    } else {
+      renderBfTable();
+    }
+  }
+}
+
+function buildMatrix(){
+  var colorsRaw=document.getElementById('mx-colors').value;
+  var sizesRaw=document.getElementById('mx-sizes').value;
+  if(!colorsRaw.trim()||!sizesRaw.trim()){showAlert('Enter colours and sizes first','danger');return;}
+  matrixColors=colorsRaw.split(',').map(function(c){return c.trim();}).filter(Boolean);
+  matrixSizes=sizesRaw.split(',').map(function(s){return s.trim();}).filter(Boolean);
+  if(!matrixColors.length||!matrixSizes.length){showAlert('Enter at least one colour and one size','danger');return;}
+
+  // Build grid: rows = colours, cols = sizes
+  var tbl=document.getElementById('mx-grid');
+  var html='<tr><td class="mx-th" style="min-width:80px">Colour \\ Size</td>';
+  matrixSizes.forEach(function(sz){html+='<td class="mx-th">'+sz+'</td>';});
+  html+='<td class="mx-th">Total</td></tr>';
+  matrixColors.forEach(function(col,ci){
+    html+='<tr><td class="mx-row-label">'+col+'</td>';
+    matrixSizes.forEach(function(sz,si){
+      html+='<td class="mx-td"><input type="number" class="mx-input" id="mxq-'+ci+'-'+si+'" min="0" value="" placeholder="0" oninput="updateMatrixTotal('+ci+')"></td>';
+    });
+    html+='<td class="mx-td" id="mxt-'+ci+'" style="font-weight:700;color:#72243E;font-size:13px;min-width:36px">0</td></tr>';
+  });
+  // Grand total row
+  html+='<tr><td class="mx-th">Total</td>';
+  matrixSizes.forEach(function(sz,si){
+    html+='<td class="mx-th" id="mxst-'+si+'">0</td>';
+  });
+  html+='<td class="mx-th" id="mxgt">0</td></tr>';
+  tbl.innerHTML=html;
+  document.getElementById('mx-grid-wrap').style.display='';
+  // Focus first cell
+  var first=document.getElementById('mxq-0-0');
+  if(first) setTimeout(function(){first.focus();},50);
+}
+
+function updateMatrixTotal(ci){
+  var rowTotal=0;
+  matrixSizes.forEach(function(sz,si){
+    var el=document.getElementById('mxq-'+ci+'-'+si);
+    rowTotal+=(parseInt(el&&el.value||0)||0);
+  });
+  var rt=document.getElementById('mxt-'+ci);
+  if(rt) rt.textContent=rowTotal||'0';
+  // Update size column totals and grand total
+  var grand=0;
+  matrixSizes.forEach(function(sz,si){
+    var colTotal=0;
+    matrixColors.forEach(function(col,ci2){
+      var el=document.getElementById('mxq-'+ci2+'-'+si);
+      colTotal+=(parseInt(el&&el.value||0)||0);
+    });
+    var st=document.getElementById('mxst-'+si);
+    if(st) st.textContent=colTotal||'0';
+    grand+=colTotal;
+  });
+  var gt=document.getElementById('mxgt');
+  if(gt) gt.textContent=grand||'0';
+}
+
+function updateBcToggleMx(){
+  var chk=document.getElementById('bc-toggle-mx');
+  var track=document.getElementById('bc-track-mx');
+  var thumb=document.getElementById('bc-thumb-mx');
+  var label=document.getElementById('bc-toggle-label-mx');
+  var on=chk.checked;
+  track.style.background=on?'#D4537E':'#ccc';
+  thumb.style.left=on?'18px':'2px';
+  label.innerHTML='Barcode: <strong style="color:'+(on?'#72243E':'#888')+'">'+(on?'ON':'OFF')+'</strong>';
+}
+
+function addMatrixToBill(){
+  var article=document.getElementById('mx-article').value.trim().toUpperCase();
+  var brand=document.getElementById('mx-brand').value.trim();
+  var pp=parseFloat(document.getElementById('mx-pp').value)||0;
+  var mrp=parseFloat(document.getElementById('mx-mrp').value)||0;
+  var cat=document.getElementById('mx-cat').value;
+  var invNo=document.getElementById('inv-no').value||'';
+  var partyCode=document.getElementById('p-code').value.trim().toUpperCase()||'XX';
+  var useBc=document.getElementById('bc-toggle-mx').checked;
+
+  if(!article){showAlert('Enter article / code','danger');return;}
+  if(!pp){showAlert('Enter purchase price','danger');return;}
+  if(!matrixColors.length||!matrixSizes.length){showAlert('Build the grid first','danger');return;}
+  if(!document.getElementById('p-code').value.trim()){showAlert('Enter Party Code first','danger');return;}
+
+  var added=0;
+  matrixColors.forEach(function(col,ci){
+    matrixSizes.forEach(function(sz,si){
+      var el=document.getElementById('mxq-'+ci+'-'+si);
+      var qty=parseInt(el&&el.value||0)||0;
+      if(!qty) return; // skip zero qty cells
+      var sku=article+'-'+col.toUpperCase().replace(/\s/g,'')+'-'+sz;
+      var barcode=useBc?generateUniqueBarcode(sku,invNo,partyCode):'';
+      var netPP=getBillNetPP(pp);
+      var brandUpper=(brand||'XX').toUpperCase().replace(/\s+/g,'').slice(0,8);
+      var variantCode=partyCode.toLowerCase()+'-'+brandUpper+'-'+(netPP/variantDivisor).toFixed(2);
+      var dNo=dNoCounter++;
+      billItems.push({sku:sku,barcode:barcode,variantCode:variantCode,dNo:dNo,photo:'',article:article,brand:brand,color:col,size:sz,cat:resolveCat(cat),qty:qty,pp:netPP,mrp:mrp,total:qty*netPP});
+      added++;
+    });
+  });
+
+  if(!added){showAlert('No quantities entered — add qty in the grid','danger');return;}
+  persist();
+  renderBill();renderSummary();
+  showAlert(added+' SKU rows added from matrix'+(useBc?' with barcodes':''));
+  clearMatrix();
+}
+
+function clearMatrix(){
+  document.getElementById('mx-article').value='';
+  document.getElementById('mx-brand').value='';
+  document.getElementById('mx-pp').value='';
+  document.getElementById('mx-mrp').value='';
+  document.getElementById('mx-cat').value='';
+  document.getElementById('mx-colors').value='';
+  document.getElementById('mx-sizes').value='';
+  document.getElementById('mx-grid').innerHTML='';
+  document.getElementById('mx-grid-wrap').style.display='none';
+  matrixColors=[];matrixSizes=[];
+}
+
+// ── BILL FORMAT MODE ──
+var bfRows=[];   // [{article, color, size, qty, rate}]
+var bfRowCount=0;
+
+function addBfRow(article, color, size, qty, pp, mrp, rowCat){
+  var id=++bfRowCount;
+  bfRows.push({id:id, article:article||'', rowCat:rowCat||'', color:color||'', size:size||'', qty:qty||'', pp:pp||'', mrp:mrp||''});
+  renderBfTable();
+  setTimeout(function(){
+    var el=document.getElementById('bf-art-'+id);
+    if(el) el.focus();
+  },30);
+}
+
+function renderBfTable(){
+  var body=document.getElementById('bf-body');
+  if(!body) return;
+  if(!bfRows.length){
+    body.innerHTML='<tr><td colspan="10" style="text-align:center;padding:16px;color:#bbb;font-size:13px">No rows yet — click "+ Add Row"</td></tr>';
+    updateBfTotals();
+    return;
+  }
+  // Build category options once
+  var catOpts='<option value="">Cat...</option>'+S.cat.map(function(c){return '<option value="'+escHtml(c)+'">'+escHtml(c)+'</option>';}).join('');
+  body.innerHTML=bfRows.map(function(row,idx){
+    var colors=row.color?row.color.split(',').map(function(c){return c.trim();}).filter(Boolean):[];
+    var sizes=row.size?row.size.split(',').map(function(s){return s.trim();}).filter(Boolean):[];
+    var combos=colors.length&&sizes.length?colors.length*sizes.length:Math.max(colors.length,sizes.length,1);
+    var qty=parseFloat(row.qty)||0;
+    var pp=parseFloat(row.pp)||0;
+    var amt=qty*pp*combos;
+    var comboHint=combos>1?'<div style="font-size:10px;color:#D4537E;margin-top:2px">→ '+combos+' SKU rows</div>':'';
+    // Category select with current value selected
+    var catSelect='<select class="bf-input" id="bf-cat-'+row.id+'" style="width:96px;font-size:12px;padding:0 4px" onchange="bfUpdate('+row.id+',\'rowCat\',this.value)">'+catOpts.replace('value="'+escHtml(row.rowCat||'')+'"','value="'+escHtml(row.rowCat||'')+'" selected')+'</select>'
+      +'<div style="display:flex;gap:3px;margin-top:3px">'
+      +'<input id="bf-newcat-'+row.id+'" placeholder="New cat..." style="height:24px;font-size:11px;padding:0 5px;border:1px solid #e0cdd5;border-radius:5px;flex:1;min-width:0">'
+      +'<button onclick="bfAddCat('+row.id+')" style="height:24px;padding:0 6px;font-size:11px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:5px;cursor:pointer;white-space:nowrap">+</button>'
+      +'</div>';
+    return '<tr>'
+      +'<td class="bf-td" style="color:#bbb;font-size:12px;padding:3px 8px;text-align:center">'+(idx+1)+'</td>'
+      +'<td class="bf-td"><input class="bf-input" id="bf-art-'+row.id+'" value="'+escHtml(row.article)+'" placeholder="Article" style="text-transform:uppercase;width:90px" oninput="bfUpdate('+row.id+',\'article\',this.value.toUpperCase())"></td>'
+      +'<td class="bf-td">'+catSelect+'</td>'
+      +'<td class="bf-td">'
+        +'<input class="bf-input" id="bf-col-'+row.id+'" value="'+escHtml(row.color)+'" placeholder="Black, Red" style="width:120px;font-size:12px" oninput="bfUpdate('+row.id+',\'color\',this.value);bfCalcAmt('+row.id+')">'
+        +comboHint
+      +'</td>'
+      +'<td class="bf-td"><input class="bf-input" id="bf-siz-'+row.id+'" value="'+escHtml(row.size)+'" placeholder="S, M, L" style="width:100px;font-size:12px" oninput="bfUpdate('+row.id+',\'size\',this.value);bfCalcAmt('+row.id+')"></td>'
+      +'<td class="bf-td"><input class="bf-input bf-num" type="number" id="bf-qty-'+row.id+'" value="'+escHtml(String(row.qty))+'" placeholder="0" min="1" oninput="bfUpdate('+row.id+',\'qty\',this.value);bfCalcAmt('+row.id+')" style="width:52px"></td>'
+      +'<td class="bf-td"><input class="bf-input bf-num" type="number" id="bf-pp-'+row.id+'" value="'+escHtml(String(row.pp))+'" placeholder="Purchase" oninput="bfUpdate('+row.id+',\'pp\',this.value);bfCalcAmt('+row.id+')" style="width:78px"></td>'
+      +'<td class="bf-td"><input class="bf-input bf-num" type="number" id="bf-mrp-'+row.id+'" value="'+escHtml(String(row.mrp))+'" placeholder="MRP" oninput="bfUpdate('+row.id+',\'mrp\',this.value)" style="width:78px"></td>'
+      +'<td class="bf-amt" id="bf-amt-'+row.id+'">'+(amt>0?'Rs'+fmt(amt)+(combos>1?' <span style="font-size:10px;color:#aaa">('+combos+'×)</span>':''):'—')+'</td>'
+      +'<td class="bf-td" style="text-align:center"><button onclick="bfRemoveRow('+row.id+')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:15px;padding:0 4px">&#10005;</button></td>'
+      +'</tr>';
+  }).join('');
+  updateBfTotals();
+}
+
+function bfUpdate(id, field, val){
+  var row=bfRows.find(function(r){return r.id===id;});
+  if(row) row[field]=val;
+}
+
+function bfGetCombos(row){
+  var colors=row.color?row.color.split(',').map(function(c){return c.trim();}).filter(Boolean):[];
+  var sizes=row.size?row.size.split(',').map(function(s){return s.trim();}).filter(Boolean):[];
+  // Full cross-product
+  if(colors.length&&sizes.length){
+    var pairs=[];
+    colors.forEach(function(col){sizes.forEach(function(sz){pairs.push({col:col,sz:sz});});});
+    return pairs;
+  }
+  if(colors.length) return colors.map(function(col){return {col:col,sz:''};});
+  if(sizes.length) return sizes.map(function(sz){return {col:'',sz:sz};});
+  return [{col:'',sz:''}];
+}
+
+function bfCalcAmt(id){
+  var row=bfRows.find(function(r){return r.id===id;});
+  if(!row) return;
+  var combos=bfGetCombos(row);
+  var n=combos.length;
+  var qty=parseFloat(row.qty)||0;
+  var pp=parseFloat(row.pp)||0;
+  var amt=qty*pp*n;
+  var el=document.getElementById('bf-amt-'+id);
+  if(el) el.innerHTML=amt>0?'Rs'+fmt(amt)+(n>1?' <span style="font-size:10px;color:#aaa">('+n+'×)</span>':''):'—';
+  // Update combo hint
+  var colEl=document.getElementById('bf-col-'+id);
+  if(colEl){
+    var hintEl=colEl.parentElement.querySelector('div');
+    if(n>1){
+      if(hintEl){hintEl.textContent='→ '+n+' SKU rows';}
+      else{var d=document.createElement('div');d.style.cssText='font-size:10px;color:#D4537E;margin-top:2px';d.textContent='→ '+n+' SKU rows';colEl.parentElement.appendChild(d);}
+    } else {
+      if(hintEl) hintEl.textContent='';
+    }
+  }
+  updateBfTotals();
+}
+
+function bfAddCat(rowId){
+  var input=document.getElementById('bf-newcat-'+rowId);
+  if(!input) return;
+  var val=input.value.trim();
+  if(!val){showAlert('Type a category name first','danger');return;}
+  // Add to master if not exists
+  if(S.cat.map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())<0){
+    S.cat.push(val);
+    persist();
+    renderAllPills();
+    populateCatSelect(); // refresh all other dropdowns
+  }
+  // Update this row's data
+  var row=bfRows.find(function(r){return r.id===rowId;});
+  if(row) row.rowCat=val;
+  // Update just this select in-place (don't rebuild whole table — avoids losing focus)
+  var sel=document.getElementById('bf-cat-'+rowId);
+  if(sel){
+    // Add option if not there
+    var exists=false;
+    for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){exists=true;break;}}
+    if(!exists){var opt=document.createElement('option');opt.value=val;opt.textContent=val;sel.appendChild(opt);}
+    sel.value=val;
+  }
+  input.value='';
+  showAlert('"'+val+'" added and selected');
+}
+
+function bfRemoveRow(id){
+  bfRows=bfRows.filter(function(r){return r.id!==id;});
+  renderBfTable();
+}
+
+function updateBfTotals(){
+  var totalQty=0, totalAmt=0;
+  bfRows.forEach(function(r){
+    var n=bfGetCombos(r).length;
+    var qty=parseFloat(r.qty)||0;
+    var pp=parseFloat(r.pp)||0;
+    totalQty+=qty*n;
+    totalAmt+=qty*pp*n;
+  });
+  var qEl=document.getElementById('bf-total-qty');
+  var aEl=document.getElementById('bf-total-amt');
+  if(qEl) qEl.textContent=totalQty||0;
+  if(aEl) aEl.textContent=totalAmt>0?'Rs'+fmt(totalAmt):'Rs 0';
+}
+
+function addBillFormatToBill(){
+  var brand=document.getElementById('bf-brand').value.trim();
+  var globalCat=document.getElementById('bf-cat').value; // fallback if row has no cat
+  var mrpDefault=parseFloat(document.getElementById('bf-mrp').value)||0;
+  var useBc=document.getElementById('bf-bc').checked;
+  var invNo=document.getElementById('inv-no').value||'';
+  var partyCode=document.getElementById('p-code').value.trim().toUpperCase()||'XX';
+
+  if(!document.getElementById('p-code').value.trim()){showAlert('Enter Party Code first','danger');return;}
+
+  var validRows=bfRows.filter(function(r){return r.article&&parseFloat(r.qty)>0&&parseFloat(r.pp)>0;});
+  if(!validRows.length){showAlert('Fill at least one row with Article, Qty and Purchase Price','danger');return;}
+
+  var added=0;
+  validRows.forEach(function(r){
+    var article=r.article.toUpperCase().trim();
+    var qty=parseFloat(r.qty)||1;
+    var pp=parseFloat(r.pp)||0;
+    var mrp=parseFloat(r.mrp)||mrpDefault||0;
+    var rowCat=r.rowCat||globalCat||'';
+    var netPP=getBillNetPP(pp);
+    var brandUpper=(brand||'XX').toUpperCase().replace(/\s+/g,'').slice(0,8);
+    var variantCode=partyCode.toLowerCase()+'-'+brandUpper+'-'+(netPP/variantDivisor).toFixed(2);
+    var combos=bfGetCombos(r);
+    combos.forEach(function(pair){
+      var col=pair.col||'';
+      var sz=pair.sz||'';
+      var sku=article+(col?'-'+col.toUpperCase().replace(/\s/g,''):'')+(sz?'-'+sz:'');
+      var barcode=useBc?generateUniqueBarcode(sku,invNo,partyCode):'';
+      var dNo=dNoCounter++;
+      billItems.push({sku:sku,barcode:barcode,variantCode:variantCode,dNo:dNo,photo:'',article:article,brand:brand,color:col||'—',size:sz||'—',cat:resolveCat(rowCat),qty:qty,pp:netPP,mrp:mrp,total:qty*netPP});
+      added++;
+    });
+  });
+
+  persist();
+  renderBill();renderSummary();
+  showAlert(added+' SKU rows added to bill');
+  clearBillFormat();
+}
+
+function clearBillFormat(){
+  bfRows=[];bfRowCount=0;
+  renderBfTable();
+  document.getElementById('bf-brand').value='';
+  document.getElementById('bf-cat').value='';
+  document.getElementById('bf-mrp').value='';
+}
+
+// ── DOWNLOAD ALL IMAGES AS ZIP ──
+function downloadAllImages(){
+  var itemsWithPhoto=billItems.filter(function(it){return it.photo;});
+  if(!itemsWithPhoto.length){showAlert('No photos added to any item yet','danger');return;}
+  if(typeof JSZip==='undefined'){showAlert('ZIP library loading, try again in a moment','danger');return;}
+
+  var party=(document.getElementById('p-name').value||'Bill').trim().replace(/\s+/g,'-');
+  var invNo=(document.getElementById('inv-no').value||'').trim();
+  var invDate=(document.getElementById('inv-date').value||'').trim();
+
+  // Calculate D.no range for folder name
+  var dNos=itemsWithPhoto.map(function(it){return parseInt(it.dNo)||0;}).filter(function(n){return n>0;}).sort(function(a,b){return a-b;});
+  var dNoRange=dNos.length?('D'+dNos[0]+'to'+dNos[dNos.length-1]):'';
+
+  // Folder name: PartyName_BillNo_D5to15
+  var folderParts=[party,invNo,dNoRange].filter(Boolean);
+  var folderName=folderParts.join('_');
+  var zipName=folderName+'.zip';
+
+  showAlert('Preparing '+itemsWithPhoto.length+' photos in "'+folderName+'" ...');
+
+  var zip=new JSZip();
+  var folder=zip.folder(folderName);
+
+  itemsWithPhoto.forEach(function(it){
+    // Photo filename: SKU_DNo.jpg  e.g.  CB212-BLACK-M_D1001.jpg
+    var fname=(it.sku||'item').replace(/[^a-zA-Z0-9\-]/g,'_')
+      +(it.dNo?'_D'+it.dNo:'')
+      +'.jpg';
+    var base64=it.photo;
+    var commaIdx=base64.indexOf(',');
+    if(commaIdx>=0) base64=base64.slice(commaIdx+1);
+    folder.file(fname, base64, {base64:true});
+  });
+
+  // Add index file inside the folder
+  var index='ITEM PHOTOS — '+party+(invNo?' / '+invNo:'')+(invDate?' ('+invDate+')':'')+'\n';
+  index+='Generated: '+new Date().toLocaleString('en-IN')+'\n';
+  index+='Total photos: '+itemsWithPhoto.length+'\n';
+  if(dNoRange) index+='D.no range: '+dNos[0]+' to '+dNos[dNos.length-1]+'\n';
+  index+='\n';
+  index+='Photo Filename\t\t\t\tSKU\t\t\t\tD.No\tBrand\t\tColour\tSize\tPurchase Rs\tMRP Rs\n';
+  index+='-'.repeat(110)+'\n';
+  itemsWithPhoto.forEach(function(it){
+    var fname=(it.sku||'item').replace(/[^a-zA-Z0-9\-]/g,'_')+(it.dNo?'_D'+it.dNo:'')+'.jpg';
+    index+=(fname+'\t\t\t\t').slice(0,32)
+      +(it.sku||'').padEnd(24)
+      +'\t'+(it.dNo||'')
+      +'\t'+(it.brand||'')
+      +'\t\t'+(it.color||'')
+      +'\t'+(it.size||'')
+      +'\t'+(it.pp||'')
+      +'\t\t'+(it.mrp||'')
+      +'\n';
+  });
+  folder.file('_index.txt', index);
+
+  zip.generateAsync({type:'blob'}).then(function(content){
+    var url=URL.createObjectURL(content);
+    var a=document.createElement('a');
+    a.href=url; a.download=zipName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},5000);
+    showAlert('Downloaded: '+zipName+' ('+itemsWithPhoto.length+' photos)');
+  }).catch(function(err){
+    showAlert('ZIP error: '+err.message,'danger');
+  });
+}
+
+// ── AI BILL SCANNER ──
+var scanImageBase64='';
+var scanRows=[];
+var scanInputMode='photo';
+
+function setScanInputMode(mode){
+  scanInputMode=mode;
+  document.getElementById('scan-mode-photo').className='btn btn-sm'+(mode==='photo'?' btn-pink':'');
+  document.getElementById('scan-mode-text').className='btn btn-sm'+(mode==='text'?' btn-pink':'');
+  document.getElementById('scan-photo-section').style.display=mode==='photo'?'':'none';
+  document.getElementById('scan-text-section').style.display=mode==='text'?'':'none';
+  document.getElementById('scan-results').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+}
+
+function handleScanFile(input){
+  var file=input.files&&input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    scanImageBase64=e.target.result;
+    var img=document.getElementById('scan-preview-img');
+    img.src=scanImageBase64;
+    document.getElementById('scan-preview-wrap').style.display='';
+    document.getElementById('scan-upload-area').style.display='none';
+    document.getElementById('scan-results').style.display='none';
+    document.getElementById('scan-error').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearScan(){
+  scanImageBase64='';scanRows=[];
+  document.getElementById('scan-upload-area').style.display='';
+  document.getElementById('scan-preview-wrap').style.display='none';
+  document.getElementById('scan-status').style.display='none';
+  document.getElementById('scan-results').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  var fi=document.getElementById('scan-file-input');
+  if(fi) fi.value='';
+}
+
+function setScanStatus(text, pct){
+  document.getElementById('scan-status-text').textContent=text;
+  document.getElementById('scan-progress-bar').style.width=pct+'%';
+}
+
+var AI_EXTRACT_PROMPT='Extract ALL line items and return ONLY a JSON array — no explanation, no markdown.\n\nFor each item extract:\n- article: item code or description (string)\n- description: full item name (string)\n- size: size if mentioned (string, blank if not)\n- color: colour if mentioned (string, blank if not)\n- qty: quantity as number\n- rate: rate/price as number\n- mrp: MRP as number (0 if not mentioned)\n- design_no: design number if separately listed (string)\n\nExample output: [{"article":"NIGHTY-ALPINE","description":"NIGHTY - ALPINE AL","size":"XL","color":"","qty":5,"rate":630,"mrp":1010,"design_no":"1185"}]\n\nReturn ONLY the JSON array.';
+
+async function runAIScan(mode){
+  mode=mode||scanInputMode;
+  // Validate input
+  if(mode==='photo'&&!scanImageBase64){showAlert('Upload a bill image first','danger');return;}
+  if(mode==='text'&&!document.getElementById('scan-text-input').value.trim()){showAlert('Paste bill text first','danger');return;}
+
+  // Show scanning UI
+  document.getElementById('scan-preview-wrap').style.display='none';
+  document.getElementById('scan-results').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-status').style.display='';
+  setScanStatus('Sending to AI...', 10);
+
+  var prog=10;
+  var progInterval=setInterval(function(){
+    prog=Math.min(prog+3,88);
+    document.getElementById('scan-progress-bar').style.width=prog+'%';
+  },500);
+
+  try{
+    var messageContent=[];
+
+    if(mode==='photo'){
+      var base64Data=scanImageBase64.split(',')[1];
+      var mediaType=scanImageBase64.split(';')[0].replace('data:','');
+      if(!mediaType.startsWith('image/')) mediaType='image/jpeg';
+      messageContent=[
+        {type:'image',source:{type:'base64',media_type:mediaType,data:base64Data}},
+        {type:'text',text:'This is a supplier purchase bill/challan. '+AI_EXTRACT_PROMPT}
+      ];
+      setScanStatus('AI reading the bill image...', 30);
+    } else {
+      var billText=document.getElementById('scan-text-input').value.trim();
+      messageContent=[
+        {type:'text',text:'This is supplier bill text:\n\n'+billText+'\n\n'+AI_EXTRACT_PROMPT}
+      ];
+      setScanStatus('AI reading the bill text...', 30);
+    }
+
+    var response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        messages:[{role:'user',content:messageContent}]
+      })
+    });
+
+    clearInterval(progInterval);
+    setScanStatus('Processing...', 90);
+
+    if(!response.ok){
+      var errText=await response.text();
+      throw new Error('API error '+response.status+': '+errText.slice(0,200));
+    }
+
+    var data=await response.json();
+    var text=data.content.map(function(c){return c.text||'';}).join('');
+    var jsonMatch=text.match(/\[[\s\S]*\]/);
+    if(!jsonMatch) throw new Error('Could not find item data in response. Try a clearer image or paste the bill text instead.');
+
+    var items=JSON.parse(jsonMatch[0]);
+    if(!items.length) throw new Error('No items found. Make sure the image is clear and well-lit.');
+
+    scanRows=items.map(function(it,i){return Object.assign({},it,{id:i+1});});
+    document.getElementById('scan-status').style.display='none';
+    renderScanTable();
+    document.getElementById('scan-results').style.display='';
+    document.getElementById('scan-count').textContent=scanRows.length+' items found';
+    showAlert('✅ AI read '+scanRows.length+' items!');
+
+  }catch(err){
+    clearInterval(progInterval);
+    document.getElementById('scan-status').style.display='none';
+    if(mode==='photo') document.getElementById('scan-preview-wrap').style.display='';
+    document.getElementById('scan-error').style.display='';
+    var isNetworkErr=err.message==='Failed to fetch'||err.message.indexOf('fetch')>-1||err.message.indexOf('network')>-1;
+    var errHTML='';
+    if(isNetworkErr){
+      errHTML='<strong style="font-size:14px">⚠️ Cannot connect to AI</strong><br><br>'
+        +'<strong>Reason:</strong> The app is running as a local file — browsers block API calls from local files for security.<br><br>'
+        +'<strong>Fix — host the file online (free, 2 minutes):</strong><br>'
+        +'1. Go to <a href="https://netlify.com/drop" target="_blank" style="color:#1d4ed8;font-weight:600">netlify.com/drop</a> on your PC<br>'
+        +'2. Drag and drop your HTML file onto the page<br>'
+        +'3. You get a free link like <code>https://yourapp.netlify.app</code><br>'
+        +'4. Open that link — AI scan will work on all devices<br><br>'
+        +'<span style="font-size:11px;color:#888">Alternative: Upload to Google Drive → Open with → Preview won\'t work, but Netlify will.</span>';
+    } else {
+      errHTML='<strong>Scan failed:</strong> '+escHtml(err.message)
+        +'<br><span style="font-size:11px;color:#888;margin-top:4px;display:block">💡 Tip: Make sure the image is clear, or try the "📋 Paste Text" mode instead.</span>';
+    }
+    document.getElementById('scan-error').innerHTML=errHTML;
+  }
+}
+
+function renderScanTable(){
+  var body=document.getElementById('scan-table-body');
+  if(!body) return;
+  if(!scanRows.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:16px;color:#bbb">No items</td></tr>';return;}
+  body.innerHTML=scanRows.map(function(row){
+    return '<tr style="border-bottom:1px solid #f5edf0">'
+      +'<td style="padding:4px 6px"><input value="'+escHtml(row.description||row.article||'')+'" style="width:140px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px" oninput="scanUpdate('+row.id+',\'description\',this.value)"></td>'
+      +'<td style="padding:4px 6px"><input value="'+escHtml(row.size||'')+'" style="width:56px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px" oninput="scanUpdate('+row.id+',\'size\',this.value)"></td>'
+      +'<td style="padding:4px 6px"><input value="'+escHtml(row.color||'')+'" style="width:70px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px" oninput="scanUpdate('+row.id+',\'color\',this.value)"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" value="'+escHtml(String(row.qty||''))+'" style="width:52px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px;text-align:right" oninput="scanUpdate('+row.id+',\'qty\',this.value)"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" value="'+escHtml(String(row.rate||''))+'" style="width:68px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px;text-align:right" oninput="scanUpdate('+row.id+',\'rate\',this.value)"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" value="'+escHtml(String(row.mrp||''))+'" style="width:68px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:12px;text-align:right" oninput="scanUpdate('+row.id+',\'mrp\',this.value)"></td>'
+      +'<td style="padding:4px 6px"><input value="'+escHtml(String(row.design_no||row.article||''))+'" style="width:64px;height:28px;padding:0 6px;border:1px solid #e0cdd5;border-radius:5px;font-size:11px;font-family:monospace" oninput="scanUpdate('+row.id+',\'design_no\',this.value)"></td>'
+      +'<td style="padding:4px;text-align:center"><button onclick="scanRemoveRow('+row.id+')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:14px">✕</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function scanUpdate(id,field,val){
+  var row=scanRows.find(function(r){return r.id===id;});
+  if(row) row[field]=val;
+}
+
+function scanRemoveRow(id){
+  scanRows=scanRows.filter(function(r){return r.id!==id;});
+  renderScanTable();
+  document.getElementById('scan-count').textContent=scanRows.length+' items';
+}
+
+function addScanRowBlank(){
+  var id=(scanRows.length?Math.max.apply(null,scanRows.map(function(r){return r.id;}))+1:1);
+  scanRows.push({id:id,description:'',size:'',color:'',qty:'',rate:'',mrp:'',design_no:''});
+  renderScanTable();
+}
+
+function updateColorMode(){
+  var mode=document.querySelector('input[name="scan-color-mode"]:checked').value;
+  document.getElementById('fixed-color-wrap').style.display=mode==='fixed'?'':'none';
+}
+
+function getScannedField(row, fieldKey){
+  // Returns value from scanned row based on mapped field key
+  var val=row[fieldKey]||'';
+  return String(val).trim();
+}
+
+function sendScanToBillFormat(){
+  var validRows=scanRows.filter(function(r){
+    var rate=parseFloat(r.rate)||parseFloat(r.mrp)||0;
+    return (r.description||r.article||r.design_no)&&parseFloat(r.qty)>0&&rate>0;
+  });
+  if(!validRows.length){showAlert('No valid rows to add — check qty and rate fields','danger');return;}
+
+  var brand=document.getElementById('scan-brand').value.trim();
+  var fixedCat=document.getElementById('scan-cat').value;
+  var mapArticle=document.getElementById('map-article').value;
+  var mapCat=document.getElementById('map-cat').value;
+  var mapRate=document.getElementById('map-rate').value;
+  var mapMrp=document.getElementById('map-mrp').value;
+  var colorMode=document.querySelector('input[name="scan-color-mode"]:checked').value;
+  var fixedColor=document.getElementById('scan-fixed-color').value.trim();
+
+  showTab('bill');
+  setEntryMode('bill');
+
+  validRows.forEach(function(r){
+    // Article
+    var article=getScannedField(r, mapArticle)||getScannedField(r,'article')||getScannedField(r,'design_no')||'ITEM';
+    article=article.toUpperCase().replace(/\s+/g,'-').replace(/[^A-Z0-9\-]/g,'').slice(0,20);
+
+    // Category
+    var rowCat=fixedCat;
+    if(mapCat!=='none'){
+      var rawCat=getScannedField(r, mapCat);
+      if(rawCat){
+        // Clean: take first word or meaningful part e.g. "NIGHTY - ALPINE AL" → "NIGHTY"
+        var catClean=rawCat.split(/[\-\s]/)[0].trim();
+        catClean=catClean.charAt(0).toUpperCase()+catClean.slice(1).toLowerCase();
+        // Auto-add to master if new
+        if(catClean&&S.cat.map(function(v){return v.toLowerCase();}).indexOf(catClean.toLowerCase())<0){
+          S.cat.push(catClean);persist();populateCatSelect();renderAllPills();
+        }
+        rowCat=catClean||fixedCat;
+      }
+    }
+
+    // Rate and MRP
+    var pp=parseFloat(r[mapRate])||parseFloat(r.rate)||0;
+    var mrp=mapMrp==='none'?0:(parseFloat(r[mapMrp])||0);
+
+    // Colour
+    var color='';
+    if(colorMode==='fixed') color=fixedColor;
+    else if(colorMode==='from_data') color=r.color||'';
+    // 'manual' → leave blank, user will fill in bill format
+
+    var size=r.size||'';
+    var qty=parseFloat(r.qty)||1;
+
+    addBfRow(article, color, size, qty, pp, mrp, rowCat);
+  });
+
+  if(brand) document.getElementById('bf-brand').value=brand;
+  persist();
+  showAlert('✅ '+validRows.length+' items sent to Bill Format');
+  clearScan();
+}
+
+// Hide loader - page is ready
+var _loader=document.getElementById('app-loader');
+if(_loader) _loader.style.display='none';
+
+// ── INIT ──
+try{
+document.getElementById('inv-date').valueAsDate=new Date();
+populateCatSelect();buildChips();buildBrandDatalist();
+loadWaSettings();refreshWaInfo();
+updateHistBadge();
+loadDivisorSettings();
+setPPMode('direct');
+
+// Tab across matrix cells in order
+document.addEventListener('keydown',function(e){
+  if(e.target.classList.contains('mx-input')){
+    if(e.key==='Enter'||e.key==='Tab'){
+      e.preventDefault();
+      var id=e.target.id;
+      var parts=id.split('-');
+      var ci=parseInt(parts[1]),si=parseInt(parts[2]);
+      var nextSi=si+1;
+      var nextCi=ci;
+      if(nextSi>=matrixSizes.length){nextSi=0;nextCi=ci+1;}
+      if(nextCi>=matrixColors.length){nextCi=0;}
+      var next=document.getElementById('mxq-'+nextCi+'-'+nextSi);
+      if(next){next.focus();next.select();}
+      updateMatrixTotal(ci);
+    }
+    return;
+  }
+  // Bill format Tab navigation
+  if(e.target.classList.contains('bf-input')){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      // Check if it's a new-cat input field
+      if(e.target.id&&e.target.id.indexOf('bf-newcat-')===0){
+        var rowId=parseInt(e.target.id.replace('bf-newcat-',''));
+        bfAddCat(rowId);
+        return;
+      }
+      var allInputs=Array.from(document.querySelectorAll('.bf-input'));
+      var idx=allInputs.indexOf(e.target);
+      var isLastInRow=!allInputs[idx+1]||allInputs[idx+1].closest('tr')!==e.target.closest('tr');
+      var isLastRow=e.target.closest('tr')===document.getElementById('bf-body').lastElementChild;
+      if(isLastInRow&&isLastRow){
+        addBfRow();
+      } else if(allInputs[idx+1]){
+        allInputs[idx+1].focus();allInputs[idx+1].select();
+      }
+    }
+  }
+});
+updateDnoDisplay();
+
+[['new-brand','brand'],['new-cat','cat'],['new-color','color'],['new-size','size']].forEach(function(pair){
+  document.getElementById(pair[0]).addEventListener('keydown',function(e){if(e.key==='Enter')addMaster(pair[1]);});
+});
+[['quick-brand','brand'],['quick-cat','cat'],['quick-color','color'],['quick-size','size']].forEach(function(pair){
+  document.getElementById(pair[0]).addEventListener('keydown',function(e){if(e.key==='Enter')quickAdd(pair[1]);});
+});
+// Enter key for per-row bill format category add
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target.id&&e.target.id.indexOf('bf-newcat-')===0){
+    var rowId=parseInt(e.target.id.replace('bf-newcat-',''));
+    bfAddCat(rowId);
+  }
+});
+document.getElementById('ai-article').addEventListener('input',function(e){
+  e.target.value=e.target.value.toUpperCase();updatePreview();updateVariantPreview();
+});
+document.getElementById('p-code').addEventListener('input',function(e){
+  e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+});
+document.getElementById('wa-num-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter')saveWaNum();
+});
+}catch(initErr){
+  var _loader2=document.getElementById('app-loader');
+  if(_loader2){
+    _loader2.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:32px;margin-bottom:12px">⚠️</div><h2 style="color:#72243E;font-size:16px;margin-bottom:8px;font-family:sans-serif">App failed to start</h2><p style="color:#888;font-size:12px;font-family:sans-serif">Error: '+initErr.message+'</p><p style="color:#aaa;font-size:11px;margin-top:8px;font-family:sans-serif">Try refreshing the page</p></div>';
+    _loader2.style.display='flex';
+  }
+}
+</script>
+
+<!-- External libraries loaded AFTER page HTML so page renders immediately -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+</html>
