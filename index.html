@@ -221,6 +221,7 @@ input[type=number]::-webkit-inner-spin-button{display:none}
           <button id="mode-matrix" class="btn btn-sm" onclick="setEntryMode('matrix')" style="font-size:11px">Matrix</button>
           <button id="mode-bill" class="btn btn-sm" onclick="setEntryMode('bill')" style="font-size:11px">Bill Format</button>
           <button id="mode-search" class="btn btn-sm" onclick="setEntryMode('search')" style="font-size:11px;background:#fff8e1;color:#b45309;border-color:#fcd34d">⚡ Quick Add</button>
+          <button id="mode-sku" class="btn btn-sm" onclick="setEntryMode('sku')" style="font-size:11px;background:#f0fdf4;color:#166534;border-color:#86efac">🧩 SKU Builder</button>
         </div>
       </div>
       <div class="fast-box">
@@ -463,6 +464,110 @@ input[type=number]::-webkit-inner-spin-button{display:none}
           <button class="btn btn-pink" onclick="qsAddAllToBill()" style="flex:1;height:44px;font-size:14px;font-weight:700">⚡ Add All to Bill</button>
         </div>
         <div style="font-size:11px;color:#aaa;margin-top:6px">Search pulls from past bills + your master item list. Tab between cells. Enter on last cell adds another row.</div>
+      </div>
+
+      <!-- SKU BUILDER MODE -->
+      <div id="sku-builder-box" style="display:none">
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:14px">
+
+          <!-- Row 1: Brand + Category -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:140px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">BRAND</span>
+              <input id="skb-brand" list="brand-list" placeholder="e.g. Natural" style="margin-top:3px;height:38px;font-size:14px">
+            </div>
+            <div style="flex:1;min-width:140px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">CATEGORY</span>
+              <select id="skb-cat" style="margin-top:3px;height:38px;width:100%;font-size:14px"><option value="">-- Select --</option></select>
+            </div>
+            <div style="display:flex;align-items:flex-end">
+              <button class="btn btn-sm" onclick="skbClear()" style="height:38px;margin-top:14px">Clear All</button>
+            </div>
+          </div>
+
+          <!-- Row 2: Articles -->
+          <div style="margin-bottom:12px">
+            <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">
+              ARTICLE CODES — separate multiple with comma
+            </span>
+            <input id="skb-articles" placeholder="e.g. CB212, IMP101, KP5588, NW-4421" style="margin-top:3px;height:42px;font-size:14px;font-weight:600;font-family:monospace;letter-spacing:1px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase();skbLivePreview()">
+            <div id="skb-articles-hint" style="font-size:11px;color:#166534;margin-top:3px"></div>
+          </div>
+
+          <!-- Row 3: Sizes + Colours in a 2-col grid -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:180px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">SIZES — separate with comma</span>
+              <input id="skb-sizes" placeholder="e.g. S, M, L, XL  or  32B, 34B, 36B" style="margin-top:3px;height:38px;font-size:13px" oninput="skbLivePreview()">
+            </div>
+            <div style="flex:1;min-width:180px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">COLOURS — separate with comma (optional)</span>
+              <input id="skb-colors" placeholder="e.g. Black, Red, White  (leave blank if not needed)" style="margin-top:3px;height:38px;font-size:13px" oninput="skbLivePreview()">
+            </div>
+          </div>
+
+          <!-- Row 4: Prices -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:120px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">PURCHASE PRICE (Rs) *</span>
+              <input type="number" id="skb-pp" placeholder="e.g. 375" style="margin-top:3px;height:38px;font-size:15px;font-weight:700" oninput="skbLivePreview()">
+            </div>
+            <div style="flex:1;min-width:120px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">MRP / SALES PRICE (Rs)</span>
+              <input type="number" id="skb-mrp" placeholder="e.g. 950" style="margin-top:3px;height:38px;font-size:15px;font-weight:700">
+            </div>
+            <div style="flex:1;min-width:100px">
+              <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">QTY PER SKU</span>
+              <input type="number" id="skb-qty" value="1" min="1" style="margin-top:3px;height:38px;font-size:15px;font-weight:700" oninput="skbLivePreview()">
+            </div>
+          </div>
+
+          <!-- Live preview count -->
+          <div id="skb-live-preview" style="background:#dcfce7;border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:13px;font-weight:600;color:#166534;display:none"></div>
+
+          <!-- Build button -->
+          <button class="btn" onclick="skbBuildSKUs()" style="width:100%;height:46px;background:#166534;color:#fff;border-color:#166534;font-size:15px;font-weight:700;border-radius:10px">
+            👁 Build SKU Preview
+          </button>
+        </div>
+
+        <!-- SKU Preview Table -->
+        <div id="skb-preview-wrap" style="display:none;margin-top:12px">
+          <div style="background:#fff;border:2px solid #86efac;border-radius:12px;padding:12px 14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+              <div style="font-size:13px;font-weight:700;color:#166534">
+                Review &amp; Adjust SKUs
+                <span id="skb-sku-count" style="background:#86efac;color:#166534;border-radius:10px;padding:1px 8px;font-size:11px;margin-left:6px"></span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-sm" style="background:#f0fdf4;color:#166534;border-color:#86efac" onclick="skbAddSkuRow()">+ Add Row</button>
+                <button class="btn btn-sm" onclick="document.getElementById('skb-preview-wrap').style.display='none'">← Edit</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:#888;margin-bottom:8px">Edit freely — change any value, delete rows you don't need, add extra rows.</div>
+            <div style="overflow-x:auto;border:1px solid #dcfce7;border-radius:8px;max-height:380px;overflow-y:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:580px">
+                <thead style="position:sticky;top:0;background:#f0fdf4;z-index:1">
+                  <tr>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:left">Article</th>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:left">Size</th>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:left">Colour</th>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:right">Purchase Rs</th>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:right">MRP Rs</th>
+                    <th style="padding:7px 8px;color:#166534;font-weight:700;text-align:right">Qty</th>
+                    <th style="padding:7px 4px;width:28px"></th>
+                  </tr>
+                </thead>
+                <tbody id="skb-sku-body"></tbody>
+              </table>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <div style="font-size:13px;font-weight:700;color:#166534" id="skb-total-line"></div>
+              <div style="flex:1"></div>
+              <button class="btn" onclick="skbAddAllToBill()" style="background:#166534;color:#fff;border-color:#166534;height:44px;font-size:14px;font-weight:700;padding:0 28px">✅ Add All to Bill</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="bill-wrap" style="display:none">
@@ -1453,19 +1558,15 @@ function downloadExcel(){
   ws3['!cols']=[{wch:26},{wch:20},{wch:10},{wch:6},{wch:8},{wch:14},{wch:16}];
   XLSX.utils.book_append_sheet(wb,ws3,'Tag Sheet');
 
-  // Sheet 4: Data Transfer  -  exact import format
-  // Columns: Item Name* | Description | Category | Unit | Alternate Unit | Conversion Rate |
-  //          Item code | HSN Code | GST Tax Rate(%) | Sales Price | Sales Tax inclusive |
-  //          Purchase Price | Purchase Tax inclusive | MRP | Current stock |
-  //          Low stock alert quantity | Item type | Visible on Online Store? |
-  //          Discount | variation code | D.no
+  // Sheet 4: Data Transfer - exact import format
+  // Item Name* | Description | Category | Item code | HSN Code | GST Tax Rate(%) |
+  // Sales Price | Sales Tax inclusive | Purchase Price | Purchase Tax inclusive |
+  // MRP | Current stock | Low stock alert quantity | Visible on Online Store? |
+  // Discount | D.no | Code | Product
   var dtHeader=[
     'Item Name*\n(mandatory field)',
     'Description',
     'Category',
-    'Unit',
-    'Alternate Unit',
-    'Conversion Rate',
     'Item code',
     'HSN Code',
     'GST Tax Rate(%)',
@@ -1476,11 +1577,11 @@ function downloadExcel(){
     'MRP',
     'Current stock',
     'Low stock alert quantity',
-    'Item type',
     'Visible on Online Store?',
     'Discount',
-    'variation code',
-    'D.no'
+    'D.no',
+    'Code',
+    'Product'
   ];
   var dtRows=[dtHeader];
   billItems.forEach(function(it){
@@ -1490,33 +1591,30 @@ function downloadExcel(){
       it.sku||'',          // Item Name*
       '',                   // Description
       it.cat||'',          // Category
-      '',                   // Unit
-      '',                   // Alternate Unit
-      '',                   // Conversion Rate
       it.barcode||'',      // Item code
       '',                   // HSN Code
-      '',                   // GST Tax Rate(%)
+      0.00,                 // GST Tax Rate(%)
       mrp,                  // Sales Price
       'Inclusive',          // Sales Tax inclusive
       pp,                   // Purchase Price
       'Inclusive',          // Purchase Tax inclusive
       mrp,                  // MRP
-      it.qty||0,            // Current stock (actual quantity)
+      it.qty||0,            // Current stock
       0.5,                  // Low stock alert quantity
-      '',                   // Item type
       'No',                 // Visible on Online Store?
-      '',                   // Discount
-      it.variantCode||'',  // variation code
-      it.dNo||''           // D.no
+      0,                    // Discount
+      it.dNo||'',           // D.no
+      it.variantCode||'',  // Code (variant code)
+      it.cat||''            // Product (same as category)
     ]);
   });
   var ws4=XLSX.utils.aoa_to_sheet(dtRows);
   ws4['!cols']=[
-    {wch:26},{wch:14},{wch:12},{wch:8},{wch:14},{wch:14},
-    {wch:16},{wch:10},{wch:14},{wch:12},{wch:18},
+    {wch:26},{wch:14},{wch:12},{wch:16},
+    {wch:10},{wch:14},{wch:12},{wch:18},
     {wch:14},{wch:20},{wch:10},{wch:14},
-    {wch:22},{wch:10},{wch:22},
-    {wch:10},{wch:20},{wch:8}
+    {wch:22},{wch:22},{wch:10},{wch:8},
+    {wch:20},{wch:14}
   ];
   XLSX.utils.book_append_sheet(wb,ws4,'Data Transfer');
 
@@ -2701,10 +2799,14 @@ function setEntryMode(mode){
   document.getElementById('mode-search').className='btn btn-sm'+(mode==='search'?' btn-pink':'');
   document.getElementById('mode-search').style.background=mode==='search'?'#b45309':'#fff8e1';
   document.getElementById('mode-search').style.color=mode==='search'?'#fff':'#b45309';
+  document.getElementById('mode-sku').className='btn btn-sm'+(mode==='sku'?' btn-pink':'');
+  document.getElementById('mode-sku').style.background=mode==='sku'?'#166534':'#f0fdf4';
+  document.getElementById('mode-sku').style.color=mode==='sku'?'#fff':'#166534';
   document.querySelector('.fast-box').style.display=mode==='quick'?'':'none';
   document.getElementById('matrix-box').style.display=mode==='matrix'?'':'none';
   document.getElementById('bill-format-box').style.display=mode==='bill'?'':'none';
   document.getElementById('quick-search-box').style.display=mode==='search'?'':'none';
+  document.getElementById('sku-builder-box').style.display=mode==='sku'?'':'none';
   if(mode==='matrix'){ populateCatSelect(); }
   if(mode==='bill'){
     populateCatSelect();
@@ -2715,6 +2817,7 @@ function setEntryMode(mode){
     qsSearch('');
     setTimeout(function(){document.getElementById('qs-search').focus();},100);
   }
+  if(mode==='sku'){ skbInit(); }
 }
 
 function buildMatrix(){
@@ -3712,6 +3815,156 @@ function sendScanToBillFormat(){
 // Hide loader - page is ready
 var _loader=document.getElementById('app-loader');
 if(_loader) _loader.style.display='none';
+
+
+// -- SKU BUILDER MODE --
+var skbSkuRows = [];
+
+function skbInit(){
+  var dc = document.getElementById('skb-cat');
+  if(dc) dc.innerHTML = '<option value="">-- Select --</option>' + S.cat.map(function(c){return '<option value="'+escHtml(c)+'">'+escHtml(c)+'</option>';}).join('');
+  document.getElementById('skb-preview-wrap').style.display = 'none';
+  skbLivePreview();
+}
+
+function skbLivePreview(){
+  var arts = (document.getElementById('skb-articles').value||'').split(',').map(function(a){return a.trim();}).filter(Boolean);
+  var sizes = (document.getElementById('skb-sizes').value||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  var colors = (document.getElementById('skb-colors').value||'').split(',').map(function(c){return c.trim();}).filter(Boolean);
+  var hint = document.getElementById('skb-articles-hint');
+  var prev = document.getElementById('skb-live-preview');
+  if(hint) hint.textContent = arts.length ? arts.length + ' article(s): ' + arts.join(' | ') : '';
+  var total = arts.length * Math.max(sizes.length,1) * Math.max(colors.length,1);
+  if(prev){
+    if(arts.length && sizes.length){
+      prev.style.display = '';
+      prev.textContent = arts.length + ' articles x ' + Math.max(sizes.length,1) + ' size(s) x ' + Math.max(colors.length,1) + ' colour(s) = ' + total + ' SKUs total';
+    } else {
+      prev.style.display = 'none';
+    }
+  }
+}
+
+function skbBuildSKUs(){
+  var arts = (document.getElementById('skb-articles').value||'').split(',').map(function(a){return a.trim().toUpperCase();}).filter(Boolean);
+  var sizes = (document.getElementById('skb-sizes').value||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  var colors = (document.getElementById('skb-colors').value||'').split(',').map(function(c){return c.trim();}).filter(Boolean);
+  var pp = parseFloat(document.getElementById('skb-pp').value)||0;
+  var mrp = parseFloat(document.getElementById('skb-mrp').value)||0;
+  var qty = parseInt(document.getElementById('skb-qty').value)||1;
+
+  if(!arts.length){showAlert('Enter at least one article code','danger');return;}
+  if(!sizes.length){showAlert('Enter at least one size','danger');return;}
+  if(!pp){showAlert('Enter purchase price','danger');return;}
+
+  var colList = colors.length ? colors : [''];
+  var skuId = 0;
+  skbSkuRows = [];
+
+  arts.forEach(function(art){
+    colList.forEach(function(col){
+      sizes.forEach(function(sz){
+        skuId++;
+        var sku = art + (col ? '-'+col.toUpperCase().replace(/\s/g,'') : '') + (sz ? '-'+sz : '');
+        skbSkuRows.push({id:skuId, article:art, color:col, size:sz, pp:pp, mrp:mrp, qty:qty, sku:sku});
+      });
+    });
+  });
+
+  skbRenderSkus();
+  document.getElementById('skb-preview-wrap').style.display = '';
+  document.getElementById('skb-preview-wrap').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function skbRenderSkus(){
+  var body = document.getElementById('skb-sku-body');
+  if(!body) return;
+  var total=0, totalQty=0;
+  body.innerHTML = skbSkuRows.map(function(row){
+    var amt = (parseFloat(row.pp)||0)*(parseInt(row.qty)||1);
+    total += amt; totalQty += (parseInt(row.qty)||1);
+    return '<tr style="border-bottom:1px solid #dcfce7">'
+      +'<td style="padding:4px 6px"><input class="bf-input" value="'+escHtml(row.article)+'" style="width:90px;font-family:monospace;font-size:12px;font-weight:700;text-transform:uppercase" oninput="skbSkuUpd('+row.id+',\'article\',this.value.toUpperCase())"></td>'
+      +'<td style="padding:4px 6px"><input class="bf-input" value="'+escHtml(row.size)+'" placeholder="-" style="width:64px;font-size:12px" oninput="skbSkuUpd('+row.id+',\'size\',this.value)"></td>'
+      +'<td style="padding:4px 6px"><input class="bf-input" value="'+escHtml(row.color)+'" placeholder="-" style="width:80px;font-size:12px" oninput="skbSkuUpd('+row.id+',\'color\',this.value)"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" class="bf-input bf-num" value="'+row.pp+'" style="width:76px" oninput="skbSkuUpd('+row.id+',\'pp\',this.value);skbRefreshTotals()"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" class="bf-input bf-num" value="'+row.mrp+'" style="width:76px" oninput="skbSkuUpd('+row.id+',\'mrp\',this.value)"></td>'
+      +'<td style="padding:4px 6px;text-align:right"><input type="number" class="bf-input bf-num" value="'+row.qty+'" min="1" style="width:52px" oninput="skbSkuUpd('+row.id+',\'qty\',this.value);skbRefreshTotals()"></td>'
+      +'<td style="padding:4px;text-align:center"><button onclick="skbRemSku('+row.id+')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:15px;padding:0 4px">x</button></td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:16px;color:#ccc">No SKUs</td></tr>';
+
+  var tl = document.getElementById('skb-total-line');
+  if(tl) tl.textContent = skbSkuRows.length + ' SKUs | ' + totalQty + ' pcs | Rs ' + fmt(total);
+  var cnt = document.getElementById('skb-sku-count');
+  if(cnt) cnt.textContent = skbSkuRows.length + ' SKUs';
+}
+
+function skbSkuUpd(id, field, val){
+  var r = skbSkuRows.find(function(x){return x.id===id;});
+  if(r) r[field] = val;
+}
+
+function skbRefreshTotals(){
+  var total=0, totalQty=0;
+  skbSkuRows.forEach(function(r){total+=(parseFloat(r.pp)||0)*(parseInt(r.qty)||1);totalQty+=(parseInt(r.qty)||1);});
+  var tl = document.getElementById('skb-total-line');
+  if(tl) tl.textContent = skbSkuRows.length + ' SKUs | ' + totalQty + ' pcs | Rs ' + fmt(total);
+}
+
+function skbRemSku(id){
+  skbSkuRows = skbSkuRows.filter(function(r){return r.id!==id;});
+  skbRenderSkus();
+}
+
+function skbAddSkuRow(){
+  var maxId = skbSkuRows.length ? Math.max.apply(null,skbSkuRows.map(function(r){return r.id;})) : 0;
+  skbSkuRows.push({id:maxId+1, article:'', color:'', size:'', pp:'', mrp:'', qty:1});
+  skbRenderSkus();
+}
+
+function skbAddAllToBill(){
+  var valid = skbSkuRows.filter(function(r){return r.article && parseFloat(r.pp)>0;});
+  if(!valid.length){showAlert('No valid SKUs — check article code and purchase price','danger');return;}
+  if(!document.getElementById('p-code').value.trim()){showAlert('Enter Party Code in bill details first','danger');return;}
+  var partyCode = document.getElementById('p-code').value.trim().toUpperCase();
+  var invNo = document.getElementById('inv-no').value||'';
+  var brand = (document.getElementById('skb-brand').value||'').trim();
+  var cat = (document.getElementById('skb-cat').value||'');
+  var brandUpper = (brand||'XX').toUpperCase().replace(/\s+/g,'').slice(0,8);
+  var added = 0;
+  valid.forEach(function(r){
+    var netPP = getBillNetPP(parseFloat(r.pp)||0);
+    var mrp = parseFloat(r.mrp)||0;
+    var qty = parseInt(r.qty)||1;
+    var col = r.color||'';
+    var sz = r.size||'';
+    var sku = r.article + (col?'-'+col.toUpperCase().replace(/\s/g,''):'') + (sz?'-'+sz:'');
+    var variantCode = partyCode.toLowerCase()+'-'+brandUpper+'-'+(netPP/variantDivisor).toFixed(2);
+    var barcode = generateUniqueBarcode(sku, invNo, partyCode);
+    var dNo = getNextDno(); dNoCounter++;
+    billItems.push({sku:sku, barcode:barcode, variantCode:variantCode, dNo:dNo, photo:'',
+      article:r.article, brand:brand, color:col||'-', size:sz||'-',
+      cat:resolveCat(cat), qty:qty, pp:netPP, mrp:mrp, total:qty*netPP});
+    added++;
+  });
+  persist(); renderBill(); renderSummary();
+  showAlert(added + ' SKUs added to bill!');
+  skbClear();
+}
+
+function skbClear(){
+  ['skb-articles','skb-sizes','skb-colors','skb-pp','skb-mrp'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  var qty = document.getElementById('skb-qty');
+  if(qty) qty.value = '1';
+  skbSkuRows = [];
+  document.getElementById('skb-preview-wrap').style.display = 'none';
+  document.getElementById('skb-live-preview').style.display = 'none';
+  document.getElementById('skb-articles-hint').textContent = '';
+}
 
 // -- INIT --
 try{
