@@ -230,6 +230,7 @@ input[type=number]::-webkit-inner-spin-button{display:none}
             <span class="lbl">Brand Name</span>
             <input id="ai-brand" list="brand-list" placeholder="Type or select brand" oninput="updateVariantPreview()">
             <datalist id="brand-list"></datalist>
+            <datalist id="cat-list"></datalist>
             <div class="inline-add">
               <input id="quick-brand" placeholder="New brand...">
               <button class="btn btn-pink btn-sm" onclick="quickAdd('brand')">+ Save</button>
@@ -243,7 +244,7 @@ input[type=number]::-webkit-inner-spin-button{display:none}
           </div>
           <div>
             <span class="lbl">Category</span>
-            <select id="ai-cat"><option value="">-- Select --</option></select>
+            <input id="ai-cat" list="cat-list" placeholder="Type or select category" oninput="updateVariantPreview()">
             <div class="inline-add">
               <input id="quick-cat" placeholder="New category...">
               <button class="btn btn-pink btn-sm" onclick="quickAdd('cat')">+ Save</button>
@@ -295,6 +296,10 @@ input[type=number]::-webkit-inner-spin-button{display:none}
           <div>
             <span class="lbl">Brand Name</span>
             <input id="mx-brand" list="brand-list" placeholder="Type or select brand">
+            <div class="inline-add">
+              <input id="mx-quick-brand" placeholder="New brand...">
+              <button class="btn btn-pink btn-sm" onclick="quickAddBrand('mx-brand','mx-quick-brand')">+ Save</button>
+            </div>
           </div>
           <div>
             <span class="lbl">Article / Code *</span>
@@ -302,7 +307,7 @@ input[type=number]::-webkit-inner-spin-button{display:none}
           </div>
           <div>
             <span class="lbl">Category</span>
-            <select id="mx-cat"><option value="">-- Select --</option></select>
+            <input id="mx-cat" list="cat-list" placeholder="Type or select category">
             <div class="inline-add">
               <input id="mx-quick-cat" placeholder="New category...">
               <button class="btn btn-pink btn-sm" onclick="quickAddCat('mx-cat','mx-quick-cat')">+ Save</button>
@@ -349,10 +354,14 @@ input[type=number]::-webkit-inner-spin-button{display:none}
             <div style="flex:1;min-width:120px">
               <span class="lbl" style="margin:0">Brand (for all rows below)</span>
               <input id="bf-brand" list="brand-list" placeholder="e.g. Krishna" style="margin-top:4px">
+              <div class="inline-add" style="margin-top:4px">
+                <input id="bf-quick-brand" placeholder="New brand...">
+                <button class="btn btn-pink btn-sm" onclick="quickAddBrand('bf-brand','bf-quick-brand')">+ Save</button>
+              </div>
             </div>
             <div style="flex:1;min-width:100px">
               <span class="lbl" style="margin:0">Category</span>
-              <select id="bf-cat" style="margin-top:4px"><option value="">-- Select --</option></select>
+              <input id="bf-cat" list="cat-list" placeholder="Type or select category" style="margin-top:4px">
               <div class="inline-add" style="margin-top:4px">
                 <input id="bf-quick-cat" placeholder="New category...">
                 <button class="btn btn-pink btn-sm" onclick="quickAddCat('bf-cat','bf-quick-cat')">+ Save</button>
@@ -472,16 +481,24 @@ input[type=number]::-webkit-inner-spin-button{display:none}
 
           <!-- Row 1: Brand + Category -->
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
-            <div style="flex:1;min-width:140px">
+            <div style="flex:1;min-width:160px">
               <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">BRAND</span>
-              <input id="skb-brand" list="brand-list" placeholder="e.g. Natural" style="margin-top:3px;height:38px;font-size:14px">
+              <input id="skb-brand" list="brand-list" placeholder="Type or select brand" style="margin-top:3px;height:36px;font-size:13px">
+              <div class="inline-add" style="margin-top:3px">
+                <input id="skb-quick-brand" placeholder="New brand...">
+                <button class="btn btn-pink btn-sm" onclick="quickAddBrand('skb-brand','skb-quick-brand')">+ Save</button>
+              </div>
             </div>
-            <div style="flex:1;min-width:140px">
+            <div style="flex:1;min-width:160px">
               <span class="lbl" style="margin:0;color:#166534;font-size:11px;font-weight:700">CATEGORY</span>
-              <select id="skb-cat" style="margin-top:3px;height:38px;width:100%;font-size:14px"><option value="">-- Select --</option></select>
+              <input id="skb-cat" list="cat-list" placeholder="Type or select category" style="margin-top:3px;height:36px;font-size:13px">
+              <div class="inline-add" style="margin-top:3px">
+                <input id="skb-quick-cat" placeholder="New category...">
+                <button class="btn btn-pink btn-sm" onclick="quickAddCat('skb-cat','skb-quick-cat')">+ Save</button>
+              </div>
             </div>
-            <div style="display:flex;align-items:flex-end">
-              <button class="btn btn-sm" onclick="skbClear()" style="height:38px;margin-top:14px">Clear All</button>
+            <div style="display:flex;align-items:flex-start;padding-top:18px">
+              <button class="btn btn-sm" onclick="skbClear()">Clear All</button>
             </div>
           </div>
 
@@ -1558,15 +1575,14 @@ function downloadExcel(){
   ws3['!cols']=[{wch:26},{wch:20},{wch:10},{wch:6},{wch:8},{wch:14},{wch:16}];
   XLSX.utils.book_append_sheet(wb,ws3,'Tag Sheet');
 
-  // Sheet 4: Data Transfer - exact import format
-  // Item Name* | Description | Category | Item code | HSN Code | GST Tax Rate(%) |
-  // Sales Price | Sales Tax inclusive | Purchase Price | Purchase Tax inclusive |
-  // MRP | Current stock | Low stock alert quantity | Visible on Online Store? |
-  // Discount | D.no | Code | Product
+  // Sheet 4: Data Transfer - exact import format (22 columns)
   var dtHeader=[
     'Item Name*\n(mandatory field)',
     'Description',
     'Category',
+    'Unit',
+    'Alternate Unit',
+    'Conversion Rate',
     'Item code',
     'HSN Code',
     'GST Tax Rate(%)',
@@ -1577,6 +1593,7 @@ function downloadExcel(){
     'MRP',
     'Current stock',
     'Low stock alert quantity',
+    'Item type',
     'Visible on Online Store?',
     'Discount',
     'D.no',
@@ -1591,6 +1608,9 @@ function downloadExcel(){
       it.sku||'',          // Item Name*
       '',                   // Description
       it.cat||'',          // Category
+      '',                   // Unit
+      '',                   // Alternate Unit
+      '',                   // Conversion Rate
       it.barcode||'',      // Item code
       '',                   // HSN Code
       0.00,                 // GST Tax Rate(%)
@@ -1601,20 +1621,20 @@ function downloadExcel(){
       mrp,                  // MRP
       it.qty||0,            // Current stock
       0.5,                  // Low stock alert quantity
+      'Product',            // Item type
       'No',                 // Visible on Online Store?
       0,                    // Discount
       it.dNo||'',           // D.no
-      it.variantCode||'',  // Code (variant code)
-      it.cat||''            // Product (same as category)
+      it.variantCode||'',  // Code
+      it.cat||''            // Product
     ]);
   });
   var ws4=XLSX.utils.aoa_to_sheet(dtRows);
   ws4['!cols']=[
-    {wch:26},{wch:14},{wch:12},{wch:16},
-    {wch:10},{wch:14},{wch:12},{wch:18},
-    {wch:14},{wch:20},{wch:10},{wch:14},
-    {wch:22},{wch:22},{wch:10},{wch:8},
-    {wch:20},{wch:14}
+    {wch:26},{wch:14},{wch:12},{wch:10},{wch:14},{wch:14},
+    {wch:16},{wch:10},{wch:14},{wch:12},{wch:18},
+    {wch:14},{wch:20},{wch:10},{wch:14},{wch:22},
+    {wch:10},{wch:22},{wch:10},{wch:8},{wch:20},{wch:14}
   ];
   XLSX.utils.book_append_sheet(wb,ws4,'Data Transfer');
 
@@ -1714,14 +1734,33 @@ function buildBrandDatalist(){
   document.getElementById('brand-list').innerHTML=S.brand.map(function(b){return '<option value="'+b+'">';}).join('');
 }
 
+// Add new brand inline from any mode
+function quickAddBrand(inputId, newInputId){
+  var newEl=document.getElementById(newInputId);
+  var val=(newEl?newEl.value:'').trim();
+  if(!val){showAlert('Type a brand name first','danger');return;}
+  if(S.brand.map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())>=0){
+    var mainEl=document.getElementById(inputId);
+    if(mainEl) mainEl.value=val;
+    if(newEl) newEl.value='';
+    showAlert('"'+val+'" already exists — selected');
+    return;
+  }
+  S.brand.push(val);
+  persist();
+  buildBrandDatalist();
+  renderAllPills();
+  // Set value in the brand input
+  var mainEl=document.getElementById(inputId);
+  if(mainEl) mainEl.value=val;
+  if(newEl) newEl.value='';
+  showAlert('"'+val+'" added and selected');
+}
+
 function populateCatSelect(){
-  ['ai-cat','mx-cat','bf-cat'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(!el) return;
-    var v=el.value;
-    el.innerHTML='<option value="">-- Category --</option>'+S.cat.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
-    if(v) el.value=v;
-  });
+  // Update datalist for all searchable cat inputs
+  var dl=document.getElementById('cat-list');
+  if(dl) dl.innerHTML=S.cat.map(function(c){return '<option value="'+escHtml(c)+'">';}).join('');
 }
 function populateCatSelects(){ populateCatSelect(); }
 
@@ -2022,27 +2061,24 @@ function updatePPPreview(){
   }
 }
 
-// Inline category add  -  works for any mode's select+input pair
-function quickAddCat(selectId, inputId){
-  var el=document.getElementById(inputId);
-  var val=el.value.trim();
+function quickAddCat(inputId, newInputId){
+  var newEl=document.getElementById(newInputId);
+  var val=(newEl?newEl.value:'').trim();
   if(!val){showAlert('Type a category name first','danger');return;}
   if(S.cat.map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())>=0){
-    showAlert('"'+val+'" already exists  -  select it from the dropdown','danger');
-    // Auto-select it in the dropdown
-    var sel=document.getElementById(selectId);
-    if(sel) sel.value=val;
-    el.value='';
+    var el=document.getElementById(inputId);
+    if(el) el.value=val;
+    if(newEl) newEl.value='';
+    showAlert('"'+val+'" already exists - selected');
     return;
   }
   S.cat.push(val);
   persist();
-  populateCatSelects();  // refresh all cat dropdowns
+  populateCatSelect();
   renderAllPills();
-  // Auto-select the new category in this dropdown
-  var sel=document.getElementById(selectId);
-  if(sel) sel.value=val;
-  el.value='';
+  var el=document.getElementById(inputId);
+  if(el) el.value=val;
+  if(newEl) newEl.value='';
   showAlert('"'+val+'" added and selected');
 }
 
@@ -3159,7 +3195,6 @@ function renderBfTable(){
     return;
   }
   // Build category options once
-  var catOpts='<option value="">Cat...</option>'+S.cat.map(function(c){return '<option value="'+escHtml(c)+'">'+escHtml(c)+'</option>';}).join('');
   body.innerHTML=bfRows.map(function(row,idx){
     var colors=row.color?row.color.split(',').map(function(c){return c.trim();}).filter(Boolean):[];
     var sizes=row.size?row.size.split(',').map(function(s){return s.trim();}).filter(Boolean):[];
@@ -3168,8 +3203,8 @@ function renderBfTable(){
     var pp=parseFloat(row.pp)||0;
     var amt=qty*pp*combos;
     var comboHint=combos>1?'<div style="font-size:10px;color:#D4537E;margin-top:2px">-> '+combos+' SKU rows</div>':'';
-    // Category select with current value selected
-    var catSelect='<select class="bf-input" id="bf-cat-'+row.id+'" style="width:96px;font-size:12px;padding:0 4px" onchange="bfUpdate('+row.id+',\'rowCat\',this.value)">'+catOpts.replace('value="'+escHtml(row.rowCat||'')+'"','value="'+escHtml(row.rowCat||'')+'" selected')+'</select>'
+    // Category - searchable text input with datalist
+    var catSelect='<input list="cat-list" class="bf-input" id="bf-cat-'+row.id+'" value="'+escHtml(row.rowCat||'')+'" placeholder="Category" style="width:100px;font-size:12px" oninput="bfUpdate('+row.id+',\'rowCat\',this.value)">'
       +'<div style="display:flex;gap:3px;margin-top:3px">'
       +'<input id="bf-newcat-'+row.id+'" placeholder="New cat..." style="height:24px;font-size:11px;padding:0 5px;border:1px solid #e0cdd5;border-radius:5px;flex:1;min-width:0">'
       +'<button onclick="bfAddCat('+row.id+')" style="height:24px;padding:0 6px;font-size:11px;background:#FBEAF0;color:#72243E;border:1px solid #ED93B1;border-radius:5px;cursor:pointer;white-space:nowrap">+</button>'
@@ -3241,25 +3276,13 @@ function bfAddCat(rowId){
   if(!input) return;
   var val=input.value.trim();
   if(!val){showAlert('Type a category name first','danger');return;}
-  // Add to master if not exists
   if(S.cat.map(function(v){return v.toLowerCase();}).indexOf(val.toLowerCase())<0){
-    S.cat.push(val);
-    persist();
-    renderAllPills();
-    populateCatSelect(); // refresh all other dropdowns
+    S.cat.push(val);persist();populateCatSelect();renderAllPills();
   }
-  // Update this row's data
   var row=bfRows.find(function(r){return r.id===rowId;});
   if(row) row.rowCat=val;
-  // Update just this select in-place (don't rebuild whole table  -  avoids losing focus)
-  var sel=document.getElementById('bf-cat-'+rowId);
-  if(sel){
-    // Add option if not there
-    var exists=false;
-    for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){exists=true;break;}}
-    if(!exists){var opt=document.createElement('option');opt.value=val;opt.textContent=val;sel.appendChild(opt);}
-    sel.value=val;
-  }
+  var catInput=document.getElementById('bf-cat-'+rowId);
+  if(catInput) catInput.value=val;
   input.value='';
   showAlert('"'+val+'" added and selected');
 }
@@ -4024,6 +4047,14 @@ updateDnoDisplay();
   document.getElementById(pair[0]).addEventListener('keydown',function(e){if(e.key==='Enter')quickAdd(pair[1]);});
 });
 // Enter key for per-row bill format category add
+[['mx-quick-brand','mx-brand'],['bf-quick-brand','bf-brand'],['skb-quick-brand','skb-brand']].forEach(function(pair){
+  var el=document.getElementById(pair[0]);
+  if(el) el.addEventListener('keydown',function(e){if(e.key==='Enter')quickAddBrand(pair[1],pair[0]);});
+});
+[['mx-quick-cat','mx-cat'],['bf-quick-cat','bf-cat'],['skb-quick-cat','skb-cat']].forEach(function(pair){
+  var el=document.getElementById(pair[0]);
+  if(el) el.addEventListener('keydown',function(e){if(e.key==='Enter')quickAddCat(pair[1],pair[0]);});
+});
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&e.target.id&&e.target.id.indexOf('bf-newcat-')===0){
     var rowId=parseInt(e.target.id.replace('bf-newcat-',''));
