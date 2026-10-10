@@ -4084,5 +4084,352 @@ document.getElementById('wa-num-input').addEventListener('keydown',function(e){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- Firebase (shared database, same project as Rosy Retail) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ===== MPMASTER CLOUD SYNC (Firebase: rosy-retail) =====
+   Bills, SKU master, master lists, D.no and barcode counters are shared
+   live across every device. localStorage stays as the offline copy.
+   Collections used (separate from Rosy Retail data):
+     mp_bills/{billId}       one doc per saved purchase bill (photos removed)
+     mp_photos/{billId_key}  one doc per item photo
+     mp_sku/s00..s19         SKU master database, split into 20 parts
+     mp_meta/settings        brands/categories/colours/sizes, counters, WhatsApp no.
+*/
+(function(){
+var FIREBASE_CONFIG={
+  apiKey:"AIzaSyBTYS5WrCq2UGq8QtYG7D-RXOLE3lhP7V0",
+  authDomain:"rosy-retail.firebaseapp.com",
+  projectId:"rosy-retail",
+  storageBucket:"rosy-retail.firebasestorage.app",
+  messagingSenderId:"962907967956",
+  appId:"1:962907967956:web:c76265dea139224cb70641"
+};
+var SKU_SHARDS=20;
+var db=null, ready=false;
+var lastBills={};     // billId -> json string last seen in cloud
+var lastPhotos={};    // photoId -> true (already in cloud)
+var lastShards={};    // shardId -> json string
+var lastMetaJson='';
+var seqFloor=0;       // highest barcode sequence any device has used
+var forceNext=false;  // next meta write is a deliberate reset
+var seenResetAt=0;
+try{seenResetAt=parseInt(localStorage.getItem('mpResetAt')||'0',10)||0;}catch(e){}
+var migrated=false;
+try{migrated=localStorage.getItem('mpMigrated')==='1';}catch(e){}
+var gotBills=false, gotSku=false, gotMeta=false;
+
+/* ---------- status pill ---------- */
+var pill=document.createElement('span');
+pill.id='mp-sync-pill';
+pill.style.cssText='font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,0.18);color:#fff;margin-left:10px;white-space:nowrap';
+var tb=document.querySelector('.topbar');
+if(tb){var h=tb.querySelector('h1');if(h)h.appendChild(pill);}
+function setPill(t,c){pill.textContent=t;pill.style.background=c||'rgba(255,255,255,0.18)';}
+setPill('Connecting…');
+window.addEventListener('online',function(){if(ready)setPill('Synced','#1e8449');});
+window.addEventListener('offline',function(){setPill('Offline – saving on this device','#b45309');});
+
+/* ---------- helpers ---------- */
+function clean(o){return JSON.parse(JSON.stringify(o));}
+function photoId(billId,it,i){return String(billId)+'_'+encodeURIComponent(String(it.barcode||it.dNo||it.sku||i)).slice(0,300);}
+function stripBill(b){
+  var c=clean(b);
+  c.items=(b.items||[]).map(function(it){
+    var x=clean(it);
+    if(x.photo){x.ph=1;}
+    delete x.photo;
+    return x;
+  });
+  return c;
+}
+function shardOf(key){var h=0;for(var i=0;i<key.length;i++){h=(h*31+key.charCodeAt(i))|0;}return 's'+String(Math.abs(h)%SKU_SHARDS).padStart(2,'0');}
+function localSeqMax(){
+  var max=0;
+  Object.keys(barcodeRegistry).forEach(function(k){var n=parseInt(barcodeRegistry[k].seq||'0',10);if(n>max)max=n;});
+  return max;
+}
+function commitBatches(ops){
+  // ops: [{type:'set'|'del', ref, data}]
+  var chunks=[];
+  for(var i=0;i<ops.length;i+=400) chunks.push(ops.slice(i,i+400));
+  return Promise.all(chunks.map(function(ch){
+    var b=db.batch();
+    ch.forEach(function(o){if(o.type==='set')b.set(o.ref,o.data);else b['delete'](o.ref);});
+    return b.commit();
+  })).catch(function(e){console.error('Cloud save failed',e);setPill('Sync error – saved on this device','#c0392b');});
+}
+
+/* ---------- wrap the app's save functions ---------- */
+var _persist=persist, _persistHistory=persistHistory, _persistSkuDb=persistSkuDb, _getNextCounter=getNextCounter;
+
+getNextCounter=function(){return Math.max(_getNextCounter(), seqFloor+1);};
+
+persist=function(){_persist();pushMeta();};
+persistHistory=function(){_persistHistory();pushBills();};
+persistSkuDb=function(){_persistSkuDb();pushSku();};
+
+// Deliberate resets must win over other devices' higher numbers
+['resetSequence','resetSequenceTo1','setDnoCounter','resetDnoTo1000'].forEach(function(fn){
+  var orig=window[fn];
+  if(typeof orig!=='function') return;
+  var isSeq=(fn==='resetSequence'||fn==='resetSequenceTo1');
+  window[fn]=function(){
+    var beforeD=dNoCounter, beforeReg=JSON.stringify(barcodeRegistry), oldFloor=seqFloor;
+    forceNext=isSeq?'seq':'dno';
+    if(isSeq) seqFloor=0;
+    var r=orig.apply(this,arguments);
+    if(dNoCounter===beforeD && JSON.stringify(barcodeRegistry)===beforeReg){forceNext=false;seqFloor=oldFloor;} // cancelled
+    return r;
+  };
+});
+
+/* ---------- push: meta ---------- */
+function pushMeta(){
+  if(!db||!gotMeta) return; // first read the shared settings, then merge
+  var data={
+    S:clean(S), waNumber:waNumber||'', variantDivisor:variantDivisor,
+    dNoPrefix:dNoPrefix||'', dNoCounter:dNoCounter,
+    seqMax:Math.max(localSeqMax(), seqFloor)
+  };
+  if(forceNext){
+    data.resetAt=Date.now();
+    data.resetKind=forceNext;
+    seenResetAt=data.resetAt;
+    try{localStorage.setItem('mpResetAt',String(seenResetAt));}catch(e){}
+    forceNext=false;
+  }
+  var j=JSON.stringify(data);
+  if(j===lastMetaJson) return;
+  lastMetaJson=j;
+  seqFloor=Math.max(seqFloor,data.seqMax);
+  db.collection('mp_meta').doc('settings').set(data,{merge:true})
+    .catch(function(e){console.error(e);setPill('Sync error – saved on this device','#c0392b');});
+}
+
+/* ---------- push: bills + photos ---------- */
+function pushBills(){
+  if(!db) return;
+  var ops=[], seen={};
+  billHistory.forEach(function(b){
+    var id=String(b.id); seen[id]=true;
+    var s=stripBill(b), j=JSON.stringify(s);
+    if(lastBills[id]!==j){ops.push({type:'set',ref:db.collection('mp_bills').doc(id),data:s});lastBills[id]=j;}
+    (b.items||[]).forEach(function(it,i){
+      if(!it.photo) return;
+      var pid=photoId(id,it,i);
+      if(lastPhotos[pid]) return;
+      lastPhotos[pid]=true;
+      ops.push({type:'set',ref:db.collection('mp_photos').doc(pid),data:{billId:id,data:it.photo}});
+    });
+  });
+  // Only delete bills that the cloud already had and this device removed
+  if(gotBills){
+    Object.keys(lastBills).forEach(function(id){
+      if(seen[id]) return;
+      delete lastBills[id];
+      ops.push({type:'del',ref:db.collection('mp_bills').doc(id)});
+      db.collection('mp_photos').where('billId','==',id).get().then(function(q){
+        var del=[];q.forEach(function(d){delete lastPhotos[d.id];del.push({type:'del',ref:d.ref});});
+        if(del.length) commitBatches(del);
+      }).catch(function(){});
+    });
+  }
+  if(ops.length) commitBatches(ops);
+}
+
+/* ---------- push: SKU master ---------- */
+function buildShards(){
+  var sh={};
+  for(var i=0;i<SKU_SHARDS;i++) sh['s'+String(i).padStart(2,'0')]={};
+  Object.keys(skuDb).forEach(function(k){if(k) sh[shardOf(k)][k]=clean(skuDb[k]);});
+  return sh;
+}
+function pushSku(){
+  if(!db||!gotSku) return; // wait for cloud copy first so nothing is overwritten
+  var sh=buildShards(), ops=[];
+  Object.keys(sh).forEach(function(id){
+    var j=JSON.stringify(sh[id]);
+    if(lastShards[id]===j) return;
+    lastShards[id]=j;
+    ops.push({type:'set',ref:db.collection('mp_sku').doc(id),data:{items:sh[id]}});
+  });
+  if(ops.length) commitBatches(ops);
+}
+
+/* ---------- pull: listeners ---------- */
+function refreshUI(){
+  try{updateHistBadge();}catch(e){}
+  var histVisible=document.getElementById('tab-history').style.display!=='none';
+  var modalOpen=document.getElementById('histModal').style.display==='block';
+  if(histVisible && !modalOpen){try{renderHistory();}catch(e){}}
+  if(document.getElementById('tab-settings').style.display!=='none'){
+    try{renderAllPills();updateRegistryDisplay();updateDnoDisplay();updateSkuDbStats();loadDivisorSettings();loadWaSettings();}catch(e){}
+  }
+}
+
+function onBills(snap){
+  var localById={};
+  billHistory.forEach(function(b){localById[String(b.id)]=b;});
+  var openId=(histViewIdx>=0&&billHistory[histViewIdx])?String(billHistory[histViewIdx].id):null;
+  var remote=[];
+  lastBills={};
+  snap.forEach(function(d){
+    var b=d.data();
+    var id=String(b.id||d.id);
+    lastBills[id]=JSON.stringify(b);
+    var loc=localById[id];
+    if(openId===id && histEditMode && loc){remote.push(loc);return;} // don't disturb an edit in progress
+    // keep photos this device already has
+    if(loc){
+      var ph={};
+      (loc.items||[]).forEach(function(it,i){if(it.photo)ph[photoId(id,it,i)]=it.photo;});
+      (b.items||[]).forEach(function(it,i){var p=ph[photoId(id,it,i)];if(p){it.photo=p;lastPhotos[photoId(id,it,i)]=true;}});
+    }
+    remote.push(b);
+  });
+  // First connection on this device: upload bills that only exist here
+  if(!migrated){
+    var have={};remote.forEach(function(b){have[String(b.id)]=true;});
+    billHistory.forEach(function(b){if(!have[String(b.id)])remote.push(b);});
+    migrated=true;
+    try{localStorage.setItem('mpMigrated','1');}catch(e){}
+  }
+  remote.sort(function(a,b){return String(b.savedAt||'').localeCompare(String(a.savedAt||''));});
+  billHistory=remote;
+  if(openId!==null){histViewIdx=billHistory.findIndex(function(b){return String(b.id)===openId;});if(histViewIdx<0)closeHistModal();}
+  gotBills=true;
+  _persistHistory();
+  pushBills(); // uploads any migrated bills / photos
+  refreshUI();
+}
+
+function onSku(snap){
+  var merged={}, any=false;
+  lastShards={};
+  snap.forEach(function(d){
+    any=true;
+    var items=(d.data()||{}).items||{};
+    lastShards[d.id]=JSON.stringify(items);
+    Object.keys(items).forEach(function(k){merged[k]=items[k];});
+  });
+  if(!gotSku && !any){
+    // Cloud is empty: this device's SKU list becomes the shared one
+    gotSku=true; pushSku(); refreshUI(); return;
+  }
+  if(!gotSku){
+    // First load: add SKUs that only this device has
+    Object.keys(skuDb).forEach(function(k){if(!merged[k])merged[k]=skuDb[k];});
+  }
+  skuDb=merged;
+  gotSku=true;
+  _persistSkuDb();
+  pushSku();
+  refreshUI();
+}
+
+function onMeta(doc){
+  var m=doc.exists?doc.data():null;
+  if(!m){gotMeta=true;pushMeta();return;}
+  var reset=(m.resetAt||0)>seenResetAt;
+  if(m.S){
+    // union so nothing typed on this device is lost before first sync
+    if(!gotMeta){
+      ['brand','cat','color','size'].forEach(function(k){
+        var r=(m.S[k]||[]).slice();
+        (S[k]||[]).forEach(function(v){if(r.map(function(x){return String(x).toLowerCase();}).indexOf(String(v).toLowerCase())<0)r.push(v);});
+        m.S[k]=r;
+      });
+    }
+    S=m.S;
+  }
+  if(typeof m.waNumber==='string' && (m.waNumber||gotMeta)) waNumber=m.waNumber;
+  if(m.variantDivisor) variantDivisor=m.variantDivisor;
+  if(typeof m.dNoPrefix==='string') dNoPrefix=m.dNoPrefix;
+  if(reset){
+    seenResetAt=m.resetAt;
+    try{localStorage.setItem('mpResetAt',String(seenResetAt));}catch(e){}
+    if(m.resetKind==='dno'){
+      dNoCounter=m.dNoCounter||1000;
+      seqFloor=Math.max(seqFloor, m.seqMax||0);
+    } else {
+    dNoCounter=Math.max(dNoCounter||1000, m.dNoCounter||1000);
+    seqFloor=m.seqMax||0;
+    if(!seqFloor){barcodeRegistry={};}
+    else{
+      Object.keys(barcodeRegistry).forEach(function(k){if((barcodeRegistry[k].seq||0)>seqFloor)delete barcodeRegistry[k];});
+      barcodeRegistry['__seq_override__']={sku:'',invNo:'',date:new Date().toISOString(),seq:seqFloor};
+    }
+    }
+  } else {
+    dNoCounter=Math.max(dNoCounter||1000, m.dNoCounter||1000);
+    seqFloor=Math.max(seqFloor, m.seqMax||0);
+  }
+  gotMeta=true;
+  _persist();
+  try{buildBrandDatalist();populateCatSelect();buildChips();refreshWaInfo();}catch(e){}
+  pushMeta(); // share anything newer this device had
+  refreshUI();
+}
+
+/* ---------- photos for older bills (fetched only when needed) ---------- */
+function fillPhotos(bill){
+  if(!db||!bill) return Promise.resolve();
+  var need=(bill.items||[]).some(function(it){return it.ph&&!it.photo;});
+  if(!need) return Promise.resolve();
+  var id=String(bill.id);
+  return db.collection('mp_photos').where('billId','==',id).get().then(function(q){
+    var map={};q.forEach(function(d){map[d.id]=d.data().data;lastPhotos[d.id]=true;});
+    (bill.items||[]).forEach(function(it,i){var p=map[photoId(id,it,i)];if(p)it.photo=p;});
+    _persistHistory();
+  }).catch(function(e){console.error(e);});
+}
+['loadBillFromHistory','histDownloadPDF','histPrint'].forEach(function(fn){
+  var orig=window[fn];
+  if(typeof orig!=='function') return;
+  window[fn]=function(){
+    var args=arguments, self=this;
+    var bill=fn==='loadBillFromHistory'?billHistory[args[0]]:billHistory[histViewIdx];
+    var hasMissing=bill&&(bill.items||[]).some(function(it){return it.ph&&!it.photo;});
+    if(!hasMissing) return orig.apply(self,args);
+    showAlert('Loading photos…');
+    fillPhotos(bill).then(function(){orig.apply(self,args);});
+  };
+});
+
+/* Clear All History now clears it on every device: say so */
+var _clearAll=clearAllHistory;
+clearAllHistory=function(){
+  if(!billHistory.length) return;
+  if(!confirm('This deletes ALL bills on EVERY phone/computer connected to this app. Continue?')) return;
+  _clearAll();
+};
+
+/* ---------- start ---------- */
+if(typeof firebase==='undefined'){setPill('Offline – this device only','#b45309');return;}
+try{
+  firebase.initializeApp(FIREBASE_CONFIG);
+  db=firebase.firestore();
+  try{db.enablePersistence({synchronizeTabs:true}).catch(function(){});}catch(e){}
+}catch(e){console.error(e);setPill('Cloud not available','#c0392b');return;}
+
+firebase.auth().signInAnonymously().catch(function(e){
+  console.error(e);
+  setPill('Sign-in failed – this device only','#c0392b');
+});
+firebase.auth().onAuthStateChanged(function(user){
+  if(!user||ready) return;
+  ready=true;
+  setPill(navigator.onLine?'Synced':'Offline – saving on this device',navigator.onLine?'#1e8449':'#b45309');
+  var err=function(e){console.error(e);setPill('Sync error – check connection','#c0392b');};
+  db.collection('mp_meta').doc('settings').onSnapshot(onMeta,err);
+  db.collection('mp_sku').onSnapshot(onSku,err);
+  db.collection('mp_bills').onSnapshot(onBills,err);
+});
+})();
+
+</script>
 </body>
 </html>
